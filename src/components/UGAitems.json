@@ -1,0 +1,73 @@
+[
+    {
+      "_id": 1,
+      "owner": 2,
+      "title": "Terry Business Learning Community",
+      "description": "A modern hub for business students, offering collaborative workspaces and innovative classrooms.",
+      "url": "https://images.unsplash.com/photo-1741091750011-f0fb9b8400cc?q=80&w=2572&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3DY"
+  },
+    {
+      "_id": 2,
+      "owner": 1,
+      "title": "Miller Learning Center",
+      "description": "A central academic building with a library, study spaces, and lecture halls for students.",
+      "url": "https://images.unsplash.com/photo-1520501247332-6fb052b72414?q=80&w=2372&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "_id": 3,
+      "owner": 3,
+      "title": "Snelling Dining Hall",
+      "description": "One of UGA's most popular dining halls, open 24/7 for hungry students.",
+      "url": "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?q=80&w=2510&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "_id": 4,
+      "owner": 4,
+      "title": "Ramsey Student Center",
+      "description": "A massive recreation facility featuring pools, basketball courts, and fitness spaces.",
+      "url": "https://images.unsplash.com/photo-1596357395217-80de13130e92?q=80&w=2371&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "_id": 5,
+      "owner": 5,
+      "title": "Tate Student Center",
+      "description": "A lively hub for student activities, dining, and social events at UGA.",
+      "url": "https://images.unsplash.com/photo-1530735606451-8f5f13955328?q=80&w=2370&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "_id": 6,
+      "owner": 2,
+      "title": "UGA Main Library",
+      "description": "The largest library on campus, filled with resources for research and study.",
+       "url": "https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "_id": 7,
+      "owner": 1,
+      "title": "Memorial Hall",
+      "description": "A historic building housing student affairs and administrative offices.",
+       "url": "https://images.unsplash.com/photo-1567601174983-fd174341c1e0?q=80&w=2274&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "_id": 8,
+      "owner": 3,
+      "title": "Park Hall",
+      "description": "Home to the English and foreign language departments, a place for literary exploration.",
+       "url": "https://images.unsplash.com/photo-1527576539890-dfa815648363?q=80&w=2265&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "_id": 9,
+      "owner": 4,
+      "title": "Dawson Hall",
+      "description": "A facility dedicated to family and consumer sciences, promoting well-being and community.",
+       "url": "https://images.unsplash.com/photo-1637268452416-91efa6a6c059?q=80&w=2235&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3DD"
+    },
+    {
+      "_id": 10,
+      "owner": 5,
+      "title": "Science Learning Center",
+      "description": "A cutting-edge facility for hands-on science education and research.",
+       "url": "https://images.unsplash.com/photo-1475906089153-644d9452ce87?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    }
+  ]
+  
