@@ -1,8 +1,31 @@
-// app/components/Navbar.tsx
+"use client";
+
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import logo from '@/assets/UGAlogo_Arch_1in.png';
 
 const Navbar = () => {
+  const [username, setUsername] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Fetch user session from backend or local storage
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/user');
+        if (res.ok) {
+          const data = await res.json();
+          setUsername(data.username);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <nav className="bg-black-700 border-b-1 border-white">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -35,13 +58,11 @@ const Navbar = () => {
           </div>
 
           <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
-            {/* Logo */}
             <a className="flex flex-shrink-0 items-center" href="/">
               <span className="hidden md:block text-white text-2xl font-bold ml-2">
                 UGacha
               </span>
             </a>
-            {/* Desktop Menu */}
             <div className="hidden md:ml-6 md:block">
               <div className="flex space-x-2">
                 <a href="/" className="text-white bg-black hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">
@@ -60,58 +81,21 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Right Side Menu */}
           <div className="hidden md:block md:ml-6">
             <div className="flex items-center space-x-2">
-              {/* Login Button */}
-              <a
-                href="/signin"
-                className="text-white bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
-              >
-                Login
-              </a>
-              {/* Register Button */}
-              <a
-                href="/register"
-                className="text-white bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
-              >
-                Register
-              </a>
+              {username ? (
+                <span className="text-white">Welcome, {username}!</span>
+              ) : (
+                <>
+                  <a href="/signin" className="text-white bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2">
+                    Login
+                  </a>
+                  <a href="/register" className="text-white bg-green-500 hover:bg-green-600 rounded-md px-4 py-2">
+                    Register
+                  </a>
+                </>
+              )}
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      <div className="hidden" id="mobile-menu">
-        <div className="space-y-1 px-2 pb-3 pt-2">
-          <a href="/" className="bg-black text-white block rounded-md px-3 py-2 text-base font-medium">
-            Home
-          </a>
-          <a href="/library" className="text-white block rounded-md px-3 py-2 text-base font-medium">
-            Library
-          </a>
-          <a href="/packs" className="text-white block rounded-md px-3 py-2 text-base font-medium">
-            Packs
-          </a>
-          <a href="/about" className="text-white block rounded-md px-3 py-2 text-base font-medium">
-            About
-          </a>
-          <div className="flex flex-col space-y-2">
-            {/* Mobile Login Button */}
-            <a
-              href="/signin"
-              className="text-white bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2 block text-center"
-            >
-              Login
-            </a>
-            {/* Mobile Register Button */}
-            <a
-              href="/register"
-              className="text-white bg-green-500 hover:bg-green-600 rounded-md px-4 py-2 block text-center"
-            >
-              Register
-            </a>
           </div>
         </div>
       </div>

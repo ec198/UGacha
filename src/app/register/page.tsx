@@ -1,4 +1,4 @@
-// app/register/page.tsx
+// app/register/page.tsx (or pages/register.tsx)
 "use client";
 
 import { useState } from "react";
@@ -12,17 +12,43 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Reset the error state
-
-    // Simulate registering user
-    // Here you can call your backend API to handle registration
-    if (username && password) {
-      // Mock redirect on success
-      router.push("/signin"); // Redirect to sign-in page after successful registration
-    } else {
-      setError("Please fill in both fields.");
+    setError(""); // Reset error before submitting
+  
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      // Log the raw response text to check what's being returned
+      const text = await res.text(); // Get the raw response text
+      console.log("Raw Response:", text); // Log the raw response
+  
+      let data;
+      // Try parsing it as JSON only if it's valid JSON
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error("Error parsing JSON:", err);
+        setError("Unexpected response format.");
+        return;
+      }
+  
+      // If response is ok, redirect
+      if (res.ok) {
+        router.push("/signin"); // Redirect to login on success
+      } else {
+        setError(data.error || "Registration failed.");
+      }
+    } catch (err) {
+      console.error("Error in API request:", err); // Log the error
+      setError("Something went wrong. Please try again.");
     }
   };
+  
+  
+  
 
   return (
     <div className="max-w-md mx-auto mt-16 p-6 border border-gray-300 rounded-lg">

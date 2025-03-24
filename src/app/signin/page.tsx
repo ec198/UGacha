@@ -1,7 +1,5 @@
-// app/signin/page.tsx
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -15,17 +13,22 @@ export default function SignInPage() {
     e.preventDefault();
     setError(""); // Reset the error state
 
-    const res = await signIn("credentials", {
-      redirect: false,
-      username,
-      password,
-    });
+    try {
+      const res = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (res?.error) {
-      setError("Invalid credentials. Please try again.");
-    } else {
-      // Redirect on success (you can change this to any route you prefer)
-      router.push("/"); // Redirect to home or wherever you want
+      const data = await res.json();
+
+      if (res.ok) {
+        router.push("/"); // Redirect to home on successful login
+      } else {
+        setError(data.error || "Invalid credentials. Please try again.");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
     }
   };
 
