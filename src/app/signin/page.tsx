@@ -1,9 +1,9 @@
-"use client";
+'use client'; // Add this line to indicate this is a client component
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function SignInPage() {
+export default function SigninPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -11,21 +11,31 @@ export default function SignInPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Reset the error state
+    setError(""); // Reset error before submitting
 
     try {
-      const res = await fetch("/api/signin", {
+      const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password }), // Sending username and password
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        router.push("/"); // Redirect to home on successful login
+        // Store token and user info in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", data.username);
+
+        // Redirect to homepage after successful login
+        router.push("/");
+
+        // Ensure UI updates after redirection
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } else {
-        setError(data.error || "Invalid credentials. Please try again.");
+        setError(data.error || "Login failed.");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");

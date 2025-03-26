@@ -1,30 +1,56 @@
-"use client";
-
-import Image from 'next/image';
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import logo from '@/assets/UGAlogo_Arch_1in.png';
 
 const Navbar = () => {
   const [username, setUsername] = useState<string | null>(null);
   const router = useRouter();
-
+  
   useEffect(() => {
-    // Fetch user session from backend or local storage
     const fetchUser = async () => {
       try {
-        const res = await fetch('/api/user');
+        // Make a GET request to /api/auth/user to fetch the user data (username)
+        const res = await fetch('/api/auth/user', {
+          method: 'GET',
+          credentials: 'include', // Ensure cookies (like JWT token) are sent with the request
+        });
         if (res.ok) {
           const data = await res.json();
-          setUsername(data.username);
+          
+          if (data.username) {
+            setUsername(data.username); // If user exists, set the username
+          } else {
+            setUsername(null); // If no username, set it to null
+          }
+        } else {
+          setUsername(null); // If the response is not OK, clear the username
         }
       } catch (error) {
         console.error('Error fetching user:', error);
+        setUsername(null); // In case of error, clear the username
       }
     };
 
-    fetchUser();
+    fetchUser(); // Call fetchUser when the component mounts
   }, []);
+  
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+  
+      if (res.ok) {
+        setUsername(null); // Clear username state
+        router.push('/'); // Redirect to homepage
+        window.location.reload(); // Force refresh to clear auth state
+      }
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+  
 
   return (
     <nav className="bg-black-700 border-b-1 border-white">
@@ -84,13 +110,27 @@ const Navbar = () => {
           <div className="hidden md:block md:ml-6">
             <div className="flex items-center space-x-2">
               {username ? (
-                <span className="text-white">Welcome, {username}!</span>
+                <>
+                  <span className="text-white">Welcome, {username}!</span>
+                  <button
+                    onClick={handleSignOut}
+                    className="text-white bg-red-500 hover:bg-red-600 rounded-md px-4 py-2"
+                  >
+                    Sign Out
+                  </button>
+                </>
               ) : (
                 <>
-                  <a href="/signin" className="text-white bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2">
+                  <a
+                    href="/signin"
+                    className="text-white bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
+                  >
                     Login
                   </a>
-                  <a href="/register" className="text-white bg-green-500 hover:bg-green-600 rounded-md px-4 py-2">
+                  <a
+                    href="/register"
+                    className="text-white bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
+                  >
                     Register
                   </a>
                 </>
