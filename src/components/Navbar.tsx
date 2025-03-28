@@ -1,47 +1,57 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-  const [username, setUsername] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null | undefined>(undefined); // undefined indicates still checking
   const router = useRouter();
-  
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        // Make a GET request to /api/auth/user to fetch the user data (username)
-        const res = await fetch('/api/auth/user', {
-          method: 'GET',
-          credentials: 'include', // Ensure cookies (like JWT token) are sent with the request
-        });
-        if (res.ok) {
-          const data = await res.json();
-          
-          if (data.username) {
-            setUsername(data.username); // If user exists, set the username
-          } else {
-            setUsername(null); // If no username, set it to null
-          }
-        } else {
-          setUsername(null); // If the response is not OK, clear the username
-        }
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        setUsername(null); // In case of error, clear the username
-      }
-    };
 
-    fetchUser(); // Call fetchUser when the component mounts
+  const fetchUser = useCallback(async () => {
+    try {
+      // Check if user data is cached in sessionStorage
+      const cachedUser = sessionStorage.getItem('username');
+      if (cachedUser) {
+        setUsername(cachedUser);
+        return; // Skip API call if cached data is available
+      }
+
+      // Make API request if no cached data
+      const res = await fetch('/api/auth/user', {
+        method: 'GET',
+        credentials: 'include', // Ensure cookies (like JWT token) are sent with the request
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const user = data.username || null;
+
+        // Cache the username in sessionStorage
+        sessionStorage.setItem('username', user);
+        setUsername(user);
+      } else {
+        setUsername(null);
+        sessionStorage.removeItem('username'); // Clear cache if user isn't found
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      setUsername(null);
+      sessionStorage.removeItem('username');
+    }
   }, []);
-  
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
   const handleSignOut = async () => {
     try {
       const res = await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       });
-  
+
       if (res.ok) {
+        sessionStorage.removeItem('username'); // Remove username from cache
         setUsername(null); // Clear username state
         router.push('/'); // Redirect to homepage
         window.location.reload(); // Force refresh to clear auth state
@@ -50,7 +60,6 @@ const Navbar = () => {
       console.error('Error signing out:', error);
     }
   };
-  
 
   return (
     <nav className="bg-black-700 border-b-1 border-white">
@@ -109,17 +118,11 @@ const Navbar = () => {
 
           <div className="hidden md:block md:ml-6">
             <div className="flex items-center space-x-2">
-              {username ? (
-                <>
-                  <span className="text-white">Welcome, {username}!</span>
-                  <button
-                    onClick={handleSignOut}
-                    className="text-white bg-red-500 hover:bg-red-600 rounded-md px-4 py-2"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
+              {username === undefined ? (
+                // While checking, don't show login or register
+                <span className="text-white"></span>
+              ) : username === null ? (
+                // If no user, show login and register
                 <>
                   <a
                     href="/signin"
@@ -133,6 +136,17 @@ const Navbar = () => {
                   >
                     Register
                   </a>
+                </>
+              ) : (
+                // If user exists, show sign-out button
+                <>
+                  <span className="text-white">Welcome, {username}!</span>
+                  <button
+                    onClick={handleSignOut}
+                    className="text-white bg-red-500 hover:bg-red-600 rounded-md px-4 py-2"
+                  >
+                    Sign Out
+                  </button>
                 </>
               )}
             </div>
