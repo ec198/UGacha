@@ -66,7 +66,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-black-700 border-b-1 border-white">
+    <nav className="bg-black border-b-1 border-whibte">
       <div className="mx-auto max-w-10xl px-2 sm:px-6 lg:px-8">
         {/* Left side - Logo */}
         <div className="absolute left-0 flex items-center pl-14 mt-5">
