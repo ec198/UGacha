@@ -109,6 +109,12 @@ const Navbar = () => {
             >
               About
             </a>
+            <a
+              href="/events"
+              className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
+            >
+              Events
+            </a>
           </div>
 
           {/* Right side - User Authentication */}
