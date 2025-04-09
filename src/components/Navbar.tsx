@@ -160,6 +160,7 @@ const Navbar = () => {
               <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
               <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
               <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
+              <a href="/events" className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Events</a>
               <a href="/signin" className="text-white bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2">Login</a>
               <a href="/register" className="text-white bg-green-500 hover:bg-green-600 rounded-md px-4 py-2">Register</a>
               
@@ -171,6 +172,7 @@ const Navbar = () => {
               <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
               <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
               <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
+              <a href="/events" className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Events</a>
               <button onClick={handleSignOut} className="text-white bg-red-500 hover:bg-red-600 rounded-md px-4 py-2">
                 Sign Out
               </button>
