@@ -83,10 +83,13 @@ const Navbar = () => {
         <div className="relative flex items-center justify-between h-20">
           {/* Center nav */}
           <div className="flex-1 flex justify-center space-x-4 hidden md:flex">
+
             <a href="/" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Home</a>
             <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
             <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
             <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
+            <a href="/events" className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Events</a>
+         
           </div>
 
           {/* Right nav */}
