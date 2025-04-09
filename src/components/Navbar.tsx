@@ -103,7 +103,7 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <span className="text-white">Welcome, {username}!</span>
+                <span className="text-white"><b>Welcome, {username}!</b></span>
                 <button
                   onClick={handleSignOut}
                   className="text-white bg-red-500 hover:bg-red-600 rounded-md px-4 py-2"
@@ -150,21 +150,27 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
         <div className="flex flex-col items-center space-y-4 py-4">
-          <a href="/" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Home</a>
-          <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
-          <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
-          <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
+
 
           {username === undefined ? (
             <span className="text-white"></span>
           ) : username === null ? (
             <>
+              <a href="/" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Home</a>
+              <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
+              <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
+              <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
               <a href="/signin" className="text-white bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2">Login</a>
               <a href="/register" className="text-white bg-green-500 hover:bg-green-600 rounded-md px-4 py-2">Register</a>
+              
             </>
           ) : (
             <>
-              <span className="text-white">Welcome, {username}!</span>
+              <span className="text-white"><b>Welcome, {username}!</b></span>
+              <a href="/" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Home</a>
+              <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
+              <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
+              <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
               <button onClick={handleSignOut} className="text-white bg-red-500 hover:bg-red-600 rounded-md px-4 py-2">
                 Sign Out
               </button>
