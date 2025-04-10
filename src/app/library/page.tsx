@@ -20,7 +20,7 @@ const Library = () => {
       {/* Page Content */}
       <div className="relative z-10 p-6">
         <h1 className="text-4xl font-bold text-center text-white mb-6 drop-shadow-lg">
-          Opened Packs
+          Library
         </h1>
         <CardGallery />
       </div>
