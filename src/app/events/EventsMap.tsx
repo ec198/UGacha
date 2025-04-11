@@ -5,13 +5,40 @@ import L from 'leaflet';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import pinkBackground from '@/assets/pink-background.jpg';
-import cardTemplate from '@/assets/image.png'; 
+// import cardTemplate from '@/assets/image.png'; 
+import placeTemplate from '@/assets/cardTemplates/place-card.png'
+import iconTemplate from '@/assets/cardTemplates/icon-card.png';
+import eventTemplate from '@/assets/cardTemplates/event-card.png';
+import extracurricularTemplate from '@/assets/cardTemplates/extracurricular-card.png';
+import classTemplate from '@/assets/cardTemplates/class-card.png';
+import defaultTemplate from '@/assets/image.png';
+
+
 
 const MarkerCard = ({ marker }: { marker: any }) => {
+  const getBackgroundForType = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'place':
+        return placeTemplate.src;
+      case 'icon':
+        return iconTemplate.src;
+      case 'event':
+        return eventTemplate.src;
+      case 'extracurricular':
+        return extracurricularTemplate.src;
+      case 'class':
+        return classTemplate.src;
+      default:
+        return defaultTemplate.src;
+    }
+  };
+
+  const backgroundImage = getBackgroundForType(marker.type || '');
+
   return (
     <div
       className="relative w-[250px] h-[380px] text-black font-sans"
-      style={{ backgroundImage: `url(${cardTemplate.src})`, backgroundSize: 'cover', borderRadius: '10px' }}
+      style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', borderRadius: '10px' }}
     >
       {/* Name - Top left */}
       <div className="absolute top-3 left-4 text-lg font-bold">{marker.name}</div>
@@ -30,12 +57,13 @@ const MarkerCard = ({ marker }: { marker: any }) => {
         />
       </div>
 
-      {/* Ability - Bottom Left */}
-      <div className="absolute top-[200px] left-4 text-sm font-semibold">
-        {marker.ability}
+      {/* Ability and Power - same row */}
+      <div className="absolute top-[200px] left-4 right-4 flex justify-between text-sm font-semibold px-1">
+        <div>{marker.ability}</div>
+        <div>{marker.power}</div>
       </div>
 
-      {/* Description - Below Ability */}
+      {/* Description */}
       <div className="absolute top-[230px] left-4 right-4 text-xs italic whitespace-pre-wrap">
         {marker.description}
       </div>
@@ -53,6 +81,7 @@ const EventsMap = () => {
     name: '',
     type: '',
     ability: '',
+    power: '',
     description: '',
     latitude: '',
     longitude: '',
@@ -80,6 +109,7 @@ const EventsMap = () => {
         name: '',
         type: '',
         ability: '',
+        power: '',
         description: '',
         latitude: '',
         longitude: '',
@@ -105,15 +135,61 @@ const EventsMap = () => {
       />
       <div className="absolute top-4 left-4 z-20 bg-white p-4 rounded-xl shadow-md w-[300px] space-y-2 overflow-auto max-h-[90vh]">
         <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
-          <input name="name" placeholder="Name" onChange={handleChange} value={formData.name} required />
-          <input name="type" placeholder="Type" onChange={handleChange} value={formData.type} required />
-          <input name="ability" placeholder="Ability" onChange={handleChange} value={formData.ability} required />
-          <textarea name="description" placeholder="Description" onChange={handleChange} value={formData.description} required />
-          <input name="latitude" placeholder="Latitude" onChange={handleChange} value={formData.latitude} required />
-          <input name="longitude" placeholder="Longitude" onChange={handleChange} value={formData.longitude} required />
-          <input name="imageUrl" placeholder="Image URL (for marker)" onChange={handleChange} value={formData.imageUrl} required />
-          <button type="submit" className="bg-pink-500 text-white rounded p-2">Create Marker</button>
+          <input name="name" placeholder="Name" className="placeholder-black" onChange={handleChange} value={formData.name} required />
+          <input name="type" placeholder="Type" className="placeholder-black" onChange={handleChange} value={formData.type} required />
+          <input
+            name="ability"
+            placeholder="Ability"
+            className="placeholder-black"
+            onChange={handleChange}
+            value={formData.ability}
+            required
+          />
+          <input
+            name="power"
+            placeholder="Power"
+            className="placeholder-black"
+            onChange={handleChange}
+            value={formData.power}
+            required
+          />
+          <textarea
+            name="description"
+            placeholder="Description"
+            className="placeholder-black"
+            onChange={handleChange}
+            value={formData.description}
+            required
+          />
+          <input
+            name="latitude"
+            placeholder="Latitude"
+            className="placeholder-black"
+            onChange={handleChange}
+            value={formData.latitude}
+            required
+          />
+          <input
+            name="longitude"
+            placeholder="Longitude"
+            className="placeholder-black"
+            onChange={handleChange}
+            value={formData.longitude}
+            required
+          />
+          <input
+            name="imageUrl"
+            placeholder="Image URL (for marker)"
+            className="placeholder-black"
+            onChange={handleChange}
+            value={formData.imageUrl}
+            required
+          />
+          <button type="submit" className="bg-pink-500 text-white rounded p-2">
+            Create Marker
+          </button>
         </form>
+
       </div>
       <div className="absolute inset-0 z-10">
         <MapContainer center={defaultPosition} zoom={13} style={{ width: '100%', height: '100%' }}>
