@@ -1,4 +1,4 @@
-// app/packs/page.tsx
+// app/library/page.tsx
 import Image from 'next/image';
 import pinkBackground from '@/assets/pink-background.jpg';
 
