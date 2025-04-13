@@ -66,7 +66,7 @@ const Packs = () => {
           {pack.map((card) => (
             <div
               key={card._id}
-              className={`p-4 rounded-xl shadow-lg text-center w-48 h-60 bg-white/80 backdrop-blur-sm ${
+              className={`p-6 rounded-2xl shadow-lg text-center w-80 h-[35rem] bg-white/80 backdrop-blur-sm text-black ${
                 card.rarity === 'legendary'
                   ? 'border-4 border-yellow-400'
                   : card.rarity === 'epic'
@@ -79,16 +79,28 @@ const Packs = () => {
               <Image
                 src={card.imageUrl}
                 alt={card.name}
-                width={100}
-                height={100}
-                className="mx-auto mb-2 rounded-lg"
+                width={160}
+                height={160}
+                className="mx-auto mb-3 rounded-xl"
               />
-              <h2 className="text-lg font-bold">{card.name}</h2>
-              <p className="text-sm capitalize">{card.type}</p>
-              <p className="mt-2 text-xs italic">{card.rarity}</p>
-              <p className="mt-2 text-sm">{card.description}</p>
-              <div className="mt-2 text-sm">Power: {card.power}</div>
-              <div className="text-xs text-gray-500">Move: {card.move}</div>
+              <h2 className="text-xl font-bold">{card.name}</h2>
+              <p className="text-base capitalize">{card.type}</p>
+              <p className={`mt-1 text-sm italic ${
+                  card.rarity === 'common'
+                    ? 'text-gray-400'
+                    : card.rarity === 'rare'
+                    ? 'text-blue-500'
+                    : card.rarity === 'ultra rare'
+                    ? 'text-red-500'
+                    : ''
+                }`}
+              >
+                {card.rarity}
+              </p>
+
+              <p className="mt-2 text-sm px-2">{card.description}</p>
+              <div className="mt-2 text-base font-medium">Power: {card.power}</div>
+              <div className="text-sm text-gray-600">Move: {card.move}</div>
             </div>
           ))}
         </div>
