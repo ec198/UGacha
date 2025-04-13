@@ -22,9 +22,12 @@ const Packs = () => {
   // Function to open the pack
   const handleOpenPack = async () => {
     try {
+      console.log("📦 Opening a new pack... cp-1");
       setLoading(true); // Show loading indicator
+      console.log("📦 Opening a new pack... cp1");
       const res = await fetch('/api/packs/open'); // API request to fetch the pack
       console.log('API Response:', res);  // Log the raw response to check for errors
+      console.log("📦 Opening a new pack...cp2");
       if (!res.ok) throw new Error(`Failed to open pack: ${res.statusText}`);  // Check if the response is okay
       const data = await res.json();  // Parse the response as JSON
       console.log('Data received from API:', data);  // Log the parsed data for debugging
