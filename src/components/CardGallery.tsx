@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type Card = {
   _id: string;
@@ -29,26 +30,28 @@ const CardGallery = () => {
         // Add your error state handling here
       });
   }, []);
-  
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
       {cards.map((card) => (
-        <div key={card._id} className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center">
-        {card.imageUrl && (
-        <Image
-            src={card.imageUrl}
-            alt={card.name}
-            width={200}
-            height={300}
-            className="rounded-xl"
-        />
-        )}
-
+        <Link
+          key={card._id}
+          href={`/items/${card._id}`}
+          className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center hover:shadow-lg transition"
+        >
+          {card.imageUrl && (
+            <Image
+              src={card.imageUrl}
+              alt={card.name}
+              width={200}
+              height={300}
+              className="rounded-xl"
+            />
+          )}
           <h2 className="text-xl font-bold mt-2">{card.name}</h2>
           <p className="text-sm text-gray-600">{card.description}</p>
           <span className="mt-1 text-xs font-semibold text-indigo-600">{card.rarity}</span>
-        </div>
+        </Link>
       ))}
     </div>
   );

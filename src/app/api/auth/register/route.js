@@ -30,7 +30,7 @@ export async function POST(req) {
     console.log("Connected to MongoDB!");
 
     const db = client.db("UGachaCluster");
-    const usersCollecton = db.collection("users");
+    const usersCollection = db.collection("users");
 
     // Check if user already exists
     const existingUser = await usersCollection.findOne({ username });
