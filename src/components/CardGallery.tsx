@@ -9,7 +9,13 @@ type Card = {
   name: string;
   imageUrl: string;
   description: string;
-  rarity: string;
+  rarity: 'common' | 'rare' | 'ultra-rare';
+};
+
+const rarityColors: Record<Card['rarity'], string> = {
+  common: 'text-gray-400',
+  rare: 'text-blue-500',
+  'ultra-rare': 'text-red-500',
 };
 
 const CardGallery = () => {
@@ -37,7 +43,7 @@ const CardGallery = () => {
         <Link
           key={card._id}
           href={`/items/${card._id}`}
-          className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center hover:shadow-lg transition"
+          className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center hover:shadow-lg transition border-1 border-black"
         >
           {card.imageUrl && (
             <Image
@@ -48,9 +54,11 @@ const CardGallery = () => {
               className="rounded-xl"
             />
           )}
-          <h2 className="text-xl font-bold mt-2">{card.name}</h2>
-          <p className="text-sm text-gray-600">{card.description}</p>
-          <span className="mt-1 text-xs font-semibold text-indigo-600">{card.rarity}</span>
+          <h2 className="text-xl font-bold mt-2 text-black">{card.name}</h2>
+          <span className={`mt-1 text-xs font-semibold ${rarityColors[card.rarity]}`}>
+            {card.rarity.replace('-', ' ')}
+          </span>
+          <p className="text-sm text-gray-600 text-center">{card.description}</p>
         </Link>
       ))}
     </div>
