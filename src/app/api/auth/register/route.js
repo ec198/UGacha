@@ -15,7 +15,7 @@ const client = new MongoClient(uri, {
 export async function POST(req) {
   try {
     // Parse JSON body from the request
-    const { username, password } = await req.json();
+    const { username, password, inventory } = await req.json();
 
     // Log received data for debugging
     console.log("Received data:", { username, password });
@@ -47,6 +47,7 @@ export async function POST(req) {
       username,
       password: hashedPassword,
       createdAt: new Date(),
+      inventory: inventory || [],
     });
 
     if (!result.acknowledged) {

@@ -5,41 +5,70 @@ import L from 'leaflet';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import pinkBackground from '@/assets/pink-background.jpg';
-import cardTemplate from '@/assets/image.png'; 
+// import cardTemplate from '@/assets/image.png'; 
+import placeTemplate from '@/assets/cardTemplates/place-card.png'
+import iconTemplate from '@/assets/cardTemplates/icon-card.png';
+import eventTemplate from '@/assets/cardTemplates/event-card.png';
+import extracurricularTemplate from '@/assets/cardTemplates/extracurricular-card.png';
+import classTemplate from '@/assets/cardTemplates/class-card.png';
+import defaultTemplate from '@/assets/image.png';
+
+
 
 const MarkerCard = ({ marker }: { marker: any }) => {
+  const getBackgroundForType = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'place':
+        return placeTemplate.src;
+      case 'icon':
+        return iconTemplate.src;
+      case 'event':
+        return eventTemplate.src;
+      case 'extracurricular':
+        return extracurricularTemplate.src;
+      case 'class':
+        return classTemplate.src;
+      default:
+        return defaultTemplate.src;
+    }
+  };
+
+  const backgroundImage = getBackgroundForType(marker.type || '');
+
   return (
     <div
       className="relative w-[250px] h-[380px] text-black font-sans"
-      style={{ backgroundImage: `url(${cardTemplate.src})`, backgroundSize: 'cover', borderRadius: '10px' }}
+      style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', borderRadius: '10px' }}
     >
-      {/* Name - Top left */}
-      <div className="absolute top-3 left-4 text-lg font-bold">{marker.name}</div>
+       {/* Top Title */}
+  <div className="absolute top-2 left-3 text-lg font-bold">
+    {marker.name}
+  </div>
 
-      {/* Type - Top right circle */}
-      <div className="absolute top-2 right-2 bg-white rounded-full w-[60px] h-[60px] flex items-center justify-center text-sm font-semibold shadow">
-        {marker.type}
-      </div>
 
-      {/* Inserted Image - Centered */}
-      <div className="absolute top-[60px] left-[20px] w-[210px] h-[120px] rounded-md overflow-hidden border border-gray-300">
-        <img
-          src={marker.imageUrl}
-          alt="Inserted"
-          className="object-cover w-full h-full"
-        />
-      </div>
+  {/* Main Center Image */}
+  <div className="absolute top-[50px] left-[30px] w-[200px] h-[150px] border rounded-md overflow-hidden">
+    <img src={marker.imageUrl} alt="Main Visual" className="w-full h-full object-cover" />
+  </div>
 
-      {/* Ability - Bottom Left */}
-      <div className="absolute top-[200px] left-4 text-sm font-semibold">
-        {marker.ability}
-      </div>
 
-      {/* Description - Below Ability */}
-      <div className="absolute top-[230px] left-4 right-4 text-xs italic whitespace-pre-wrap">
-        {marker.description}
-      </div>
-    </div>
+
+  {/* Attack + Power */}
+  <div className="absolute top-[230px] left-4 right-4 flex justify-between items-center text-sm">
+    <span>{marker.ability}</span>
+    <span className="font-semibold">{marker.power}</span>
+  </div>
+
+
+{/* Description */}
+<div className="absolute top-[300px] left-3 right-3 pr-10 text-xs italic text-gray-700 whitespace-pre-wrap text-right">
+  {marker.description}
+</div>
+
+
+
+
+</div>
   );
 };
 
@@ -53,6 +82,7 @@ const EventsMap = () => {
     name: '',
     type: '',
     ability: '',
+    power: '',
     description: '',
     latitude: '',
     longitude: '',
@@ -80,6 +110,7 @@ const EventsMap = () => {
         name: '',
         type: '',
         ability: '',
+        power: '',
         description: '',
         latitude: '',
         longitude: '',
@@ -104,16 +135,78 @@ const EventsMap = () => {
         className="absolute inset-0 object-cover"
       />
       <div className="absolute top-4 left-4 z-20 bg-white p-4 rounded-xl shadow-md w-[300px] space-y-2 overflow-auto max-h-[90vh]">
-        <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
-          <input name="name" placeholder="Name" onChange={handleChange} value={formData.name} required />
-          <input name="type" placeholder="Type" onChange={handleChange} value={formData.type} required />
-          <input name="ability" placeholder="Ability" onChange={handleChange} value={formData.ability} required />
-          <textarea name="description" placeholder="Description" onChange={handleChange} value={formData.description} required />
-          <input name="latitude" placeholder="Latitude" onChange={handleChange} value={formData.latitude} required />
-          <input name="longitude" placeholder="Longitude" onChange={handleChange} value={formData.longitude} required />
-          <input name="imageUrl" placeholder="Image URL (for marker)" onChange={handleChange} value={formData.imageUrl} required />
-          <button type="submit" className="bg-pink-500 text-white rounded p-2">Create Marker</button>
-        </form>
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
+        <input
+          name="name"
+          placeholder="Name"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.name}
+          required
+        />
+        <input
+          name="type"
+          placeholder="Type"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.type}
+          required
+        />
+        <input
+          name="ability"
+          placeholder="Ability"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.ability}
+          required
+        />
+        <input
+          name="power"
+          placeholder="Power"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.power}
+          required
+        />
+        <textarea
+          name="description"
+          placeholder="Description"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.description}
+          required
+        />
+        <input
+          name="latitude"
+          placeholder="Latitude"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.latitude}
+          required
+        />
+        <input
+          name="longitude"
+          placeholder="Longitude"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.longitude}
+          required
+        />
+        <input
+          name="imageUrl"
+          placeholder="Image URL (for marker)"
+          className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded"
+          onChange={handleChange}
+          value={formData.imageUrl}
+          required
+        />
+        <button type="submit" className="bg-pink-500 text-white rounded p-2">
+          Create Marker
+        </button>
+      </form>
+
+
+
       </div>
       <div className="absolute inset-0 z-10">
         <MapContainer center={defaultPosition} zoom={13} style={{ width: '100%', height: '100%' }}>
