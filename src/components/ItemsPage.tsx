@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import Items from "@/components/Items";  // Import the Items component
 import UGAitems from "@/components/UGAitems.json";  // Import the items data
+import CardGallery from "@/components/CardGallery";
 
 const ItemsPage = () => {
   const [backgroundHeight, setBackgroundHeight] = useState(0);
@@ -57,7 +58,8 @@ const ItemsPage = () => {
         className="py-8 bg-gray-100"
       >
         <div className="container mx-auto px-4">
-          <Items items={UGAitems} /> {/* Pass the UGAitems as props */}
+        <CardGallery />
+        {/* Pass the UGAitems as props */}
         </div>
       </section>
     </div>
