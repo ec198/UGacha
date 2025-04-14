@@ -20,7 +20,8 @@ const Welcome = ({ onViewItems }: WelcomeProps) => {
 
   return (
     <div className="text-center text-black">
-      <h1 className="text-4xl font-bold mb-4">Welcome to UGacha !</h1>
+      <h1 className="text-4xl font-bold mb-4">Welcome to UGacha!</h1>
+      <p>This website implements a card collecting game. Using the map you can find the locations of new cards. Go to the location to collect it.</p>
       {isLoggedIn && (
         <button
           onClick={onViewItems}

@@ -71,6 +71,8 @@ const Content = () => {
         {view === 'home' && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-black">
             <h1 className="text-4xl font-bold mb-4">Welcome to UGacha!</h1>
+            <p>This website implements a card collecting game. Using the map you can find the locations of new cards. Go to the location to collect it.</p>
+            <p>&nbsp;</p>
             {isLoggedIn && (
               <button
                 onClick={handleViewItems}
