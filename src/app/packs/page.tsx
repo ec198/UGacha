@@ -68,7 +68,7 @@ const Packs = () => {
               key={card._id}
               className={`p-6 rounded-2xl shadow-lg text-center w-80 h-[35rem] bg-white/80 backdrop-blur-sm text-black ${
                 card.rarity === 'ultraRare'
-                  ? 'border-4 border-red-400'
+                  ? 'border-4 border-yellow-400'
                   : card.rarity === 'rare'
                   ? 'border-4 border-blue-400'
                   : 'border'
@@ -89,7 +89,7 @@ const Packs = () => {
                     : card.rarity === 'rare'
                     ? 'text-blue-500'
                     : card.rarity === 'ultraRare'
-                    ? 'text-red-500'
+                    ? 'text-yellow-500'
                     : ''
                 }`}
               >
