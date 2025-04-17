@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 
 const rarityWeights = [
-  { rarity: "common", weight: 90 },
+  { rarity: "common", weight: 89 },
   { rarity: "rare", weight: 10 },
+  { rarity: "ultraRare", weight: 1 }
 ];
 
 function getRandomRarity(weights: typeof rarityWeights) {
