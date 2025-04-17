@@ -63,7 +63,7 @@ const Packs = () => {
               key={`${card._id}-${index}`} // Fallback to ensure unique keys
               className={`p-6 rounded-2xl shadow-lg text-center bg-white/80 backdrop-blur-sm text-black ${
                 card.rarity === 'ultraRare'
-                  ? 'border-4 border-yellow-400'
+                  ? 'border-4 border-yellow-500'
                   : card.rarity === 'rare'
                   ? 'border-4 border-blue-400'
                   : 'border'
@@ -85,7 +85,7 @@ const Packs = () => {
                     : card.rarity === 'rare'
                     ? 'text-blue-500'
                     : card.rarity === 'ultraRare'
-                    ? 'text-yellow-500'
+                    ? 'text-yellow-600'
                     : ''
                 }`}
               >
