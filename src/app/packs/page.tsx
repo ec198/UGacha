@@ -67,10 +67,8 @@ const Packs = () => {
             <div
               key={card._id}
               className={`p-6 rounded-2xl shadow-lg text-center w-80 h-[35rem] bg-white/80 backdrop-blur-sm text-black ${
-                card.rarity === 'legendary'
-                  ? 'border-4 border-yellow-400'
-                  : card.rarity === 'epic'
-                  ? 'border-4 border-purple-500'
+                card.rarity === 'ultraRare'
+                  ? 'border-4 border-red-400'
                   : card.rarity === 'rare'
                   ? 'border-4 border-blue-400'
                   : 'border'
@@ -90,12 +88,12 @@ const Packs = () => {
                     ? 'text-gray-400'
                     : card.rarity === 'rare'
                     ? 'text-blue-500'
-                    : card.rarity === 'ultra rare'
+                    : card.rarity === 'ultraRare'
                     ? 'text-red-500'
                     : ''
                 }`}
               >
-                {card.rarity}
+                {card.rarity === 'ultraRare' ? 'ultra rare' : card.rarity}
               </p>
 
               <p className="mt-2 text-sm px-2">{card.description}</p>
