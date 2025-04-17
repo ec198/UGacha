@@ -57,26 +57,24 @@ const Content = () => {
           backgroundPosition: 'center',
         }}
       >
-        {/* Overlay Image */}
-        <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <Image
-            src={ugachaArt}
-            alt="UGacha Art"
-            width={600}
-            height={600}
-          />
-        </div>
-
-        {/* Welcome Section with Login Check */}
+        {/* Welcome Section with Logo and Text */}
         {view === 'home' && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-black">
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-black px-4">
+            <Image
+              src={ugachaArt}
+              alt="UGacha Art"
+              width={300}
+              height={300}
+              className="mb-6 w-auto h-auto max-w-[80%]"
+            />
             <h1 className="text-4xl font-bold mb-4">Welcome to UGacha!</h1>
-            <p>This website implements a card collecting game. Using the map you can find the locations of new cards. Go to the location to collect it.</p>
-            <p>&nbsp;</p>
+            <p className="max-w-md">
+              This website implements a card collecting game. Using the map you can find the locations of new cards. Go to the location to collect it.
+            </p>
             {isLoggedIn && (
               <button
                 onClick={handleViewItems}
-                className="px-6 py-3 text-lg font-semibold bg-white text-black rounded-md hover:bg-gray-300 transition"
+                className="mt-6 px-6 py-3 text-lg font-semibold bg-white text-black rounded-md hover:bg-gray-300 transition"
               >
                 Preview Cards
               </button>
@@ -87,7 +85,7 @@ const Content = () => {
 
       {/* Items Section */}
       {view === 'items' && (
-        <div ref={itemsSectionRef} className="py-8 bg-gray-100 mt-[0px] relative">
+        <div ref={itemsSectionRef} className="py-8 bg-gray-100 relative">
           <button
             onClick={handleBackToHome}
             className="fixed top-4 left-4 px-6 py-3 text-lg font-semibold bg-white text-black rounded-md hover:bg-gray-300 transition z-50"
