@@ -5,64 +5,34 @@ import L from 'leaflet';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import pinkBackground from '@/assets/pink-background.jpg';
-import placeTemplate from '@/assets/cardTemplates/place-card.png';
-import iconTemplate from '@/assets/cardTemplates/icon-card.png';
-import eventTemplate from '@/assets/cardTemplates/event-card.png';
-import extracurricularTemplate from '@/assets/cardTemplates/extracurricular-card.png';
-import classTemplate from '@/assets/cardTemplates/class-card.png';
-import defaultTemplate from '@/assets/image.png';
+import defaultIcon from '@/assets/image.png'; // Custom marker icon
+import placeCard from '@/assets/cardTemplates/place-card.png';
 
-const MarkerCard = ({ marker }: { marker: any }) => {
-  const getBackgroundForType = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'place':
-        return placeTemplate.src;
-      case 'icon':
-        return iconTemplate.src;
-      case 'event':
-        return eventTemplate.src;
-      case 'extracurricular':
-        return extracurricularTemplate.src;
-      case 'class':
-        return classTemplate.src;
-      default:
-        return defaultTemplate.src;
-    }
-  };
-
-  const backgroundImage = getBackgroundForType(marker.type || '');
-
-  return (
-    <div
-      className="relative w-[250px] h-[380px] text-black font-sans"
-      style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', borderRadius: '10px' }}
-    >
-      <div className="absolute top-2 left-3 text-lg font-bold">
-        {marker.name}
-      </div>
-
-      <div className="absolute top-[50px] left-[30px] w-[200px] h-[150px] border rounded-md overflow-hidden">
-        <img src={marker.imageUrl} alt="Main Visual" className="w-full h-full object-cover" />
-      </div>
-
-      <div className="absolute top-[230px] left-4 right-4 flex justify-between items-center text-sm">
-        <span>{marker.ability}</span>
-        <span className="font-semibold">{marker.power}</span>
-      </div>
-
-      <div className="absolute top-[300px] left-3 right-3 pr-10 text-xs italic text-gray-700 whitespace-pre-wrap text-right">
-        {marker.description}
-      </div>
-    </div>
-  );
-};
 
 const defaultPosition = {
   lat: 33.94266362958919,
   lng: -83.3724628665098,
 };
 
+const cardIcon = new L.Icon({
+  iconUrl: placeCard.src, // if imported
+  // iconUrl: placeCard, // if using string path like "/place-card.png"
+  iconSize: [60, 84],      // tweak size as needed
+  iconAnchor: [30, 42],
+  popupAnchor: [0, -40],
+  className: '',
+});
+
 const EventsMap = () => {
+  const [locations, setLocations] = useState<any[]>([]);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [missionProgress, setMissionProgress] = useState<{
+    visited: string[]; // or use location.name if no id
+    total: number;
+  }>({
+    visited: [],
+    total: 2,
+  });
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -74,14 +44,22 @@ const EventsMap = () => {
     imageUrl: '',
   });
 
-  const [markers, setMarkers] = useState<any[]>([]);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [customCards, setCustomCards] = useState<any[]>([]);
 
+  // Fetch random location cards
   useEffect(() => {
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({ shadowUrl: '' });
+    fetch('/api/locationcards')
+      .then((res) => res.json())
+      .then((data) => {
+        const shuffled = data.sort(() => 0.5 - Math.random());
+        setLocations(shuffled.slice(0, 2));
+      })
+      .catch((err) => console.error('Failed to fetch location cards:', err));
+  }, []);
 
+  // Watch user location
+  useEffect(() => {
     if (navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (position) => {
@@ -99,38 +77,48 @@ const EventsMap = () => {
           timeout: 10000,
         }
       );
-
       return () => navigator.geolocation.clearWatch(watchId);
     }
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
   };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const lat = parseFloat(formData.latitude);
-    const lng = parseFloat(formData.longitude);
-    if (!isNaN(lat) && !isNaN(lng)) {
-      setMarkers([...markers, { ...formData, lat, lng }]);
-      setFormData({
-        name: '',
-        type: '',
-        ability: '',
-        power: '',
-        description: '',
-        latitude: '',
-        longitude: '',
-        imageUrl: '',
-      });
-      setShowForm(false); // Close form after submission on mobile
+  useEffect(() => {
+    if (userLocation && locations.length === 2) {
+      const newlyVisited = locations
+        .filter((location) => {
+          const distance = calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            location.latitude,
+            location.longitude
+          );
+          return distance <= 0.1;
+        })
+        .map((loc) => loc.name); // use loc.id if available
+  
+      setMissionProgress((prev) => ({
+        ...prev,
+        visited: Array.from(new Set([...prev.visited, ...newlyVisited])),
+      }));
     }
-  };
+  }, [userLocation, locations]);
+  
 
-  const createCustomIcon = (url: string) =>
+  const createCustomIcon = () =>
     new L.Icon({
-      iconUrl: url,
+      iconUrl: defaultIcon.src,
       iconSize: [40, 40],
       iconAnchor: [20, 40],
     });
@@ -142,6 +130,35 @@ const EventsMap = () => {
     className: 'user-marker-icon',
   });
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    const newCard = {
+      ...formData,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
+    };
+  
+    setCustomCards((prev) => [...prev, newCard]);
+  
+    setFormData({
+      name: '',
+      type: '',
+      ability: '',
+      power: '',
+      description: '',
+      latitude: '',
+      longitude: '',
+      imageUrl: '',
+    });
+  
+    setShowForm(false);
+  };
+  
   return (
     <div className="w-full h-screen relative">
       <Image
@@ -150,34 +167,134 @@ const EventsMap = () => {
         fill
         className="absolute inset-0 object-cover"
       />
-      
-      <div className="absolute top-4 left-15 z-20">
-        {/* Toggle button for mobile */}
-        <div className="md:hidden mb-2">
-          <button
-            className="bg-pink-500 text-white rounded p-1"
-            onClick={() => setShowForm((prev) => !prev)}
-          >
-            {showForm ? 'Close Form' : 'Add a Card'}
-          </button>
+
+      {/* Sidebar */}
+      <div className="absolute top-4 left-1/4 transform -translate-x- sm:left-4 sm:translate-x-0 z-20 w-[55%] sm:w-[300px] p-3 sm:p-4 bg-white rounded-xl shadow-md space-y-3 max-h-[60vh] sm:max-h-[90vh] overflow-y-auto text-sm">
+
+
+
+
+        {/* Daily Mission UI */}
+        <div>
+          <h3 className="font-bold text-xl text-center mb-2">Daily Mission</h3>
+          <p className="text-sm text-center mb-4">
+            Go to the locations of the two cards to complete the mission!
+          </p>
+
+          <ul className="space-y-2">
+  {locations.map((location, index) => {
+    const isVisited = missionProgress.visited.includes(location.name); // or location.id
+    return (
+      <li key={location.name} className="text-sm">
+        {location.name} -{' '}
+        <span className={isVisited ? 'text-green-500' : 'text-red-500'}>
+          {isVisited ? 'Visited' : 'Not Visited'}
+        </span>
+      </li>
+    );
+  })}
+</ul>
+
+          <div className="mt-4">
+            <p className="text-center font-semibold">
+              {missionProgress.visited}/{missionProgress.total} Locations Visited
+            </p>
+            <progress
+              value={missionProgress.visited}
+              max={missionProgress.total}
+              className="w-full mt-2"
+            />
+          </div>
         </div>
 
-        {/* Form is always visible on desktop (md+) OR toggled on mobile */}
-        <div className={`bg-white p-4 rounded-xl shadow-md w-[300px] space-y-2 overflow-auto max-h-[90vh] ${showForm ? '' : 'hidden'} md:block`}>
-          <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
-            <input name="name" placeholder="Name" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.name} required />
-            <input name="type" placeholder="Type" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.type} required />
-            <input name="ability" placeholder="Ability" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.ability} required />
-            <input name="power" placeholder="Power" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.power} required />
-            <textarea name="description" placeholder="Description" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.description} required />
-            <input name="latitude" placeholder="Latitude" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.latitude} required />
-            <input name="longitude" placeholder="Longitude" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.longitude} required />
-            <input name="imageUrl" placeholder="Image URL (for marker)" className="text-black placeholder-gray-600 border border-gray-300 p-2 rounded" onChange={handleChange} value={formData.imageUrl} required />
-            <button type="submit" className="bg-pink-500 text-white rounded p-2">Create Marker</button>
-          </form>
-        </div>
+        {/* Add Card Form */}
+        {/* Add Card Form - Toggleable */}
+<div>
+  <button
+    className="bg-pink-500 text-white rounded p-2 w-full"
+    onClick={() => setShowForm((prev) => !prev)}
+  >
+    {showForm ? 'Close Form' : 'Add a Card'}
+  </button>
+
+  {showForm && (
+    <div className="mt-4 transition-all duration-300 ease-in-out">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
+        <input
+          name="name"
+          placeholder="Name"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.name}
+          required
+        />
+        <input
+          name="type"
+          placeholder="Type"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.type}
+          required
+        />
+        <input
+          name="ability"
+          placeholder="Ability"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.ability}
+          required
+        />
+        <input
+          name="power"
+          placeholder="Power"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.power}
+          required
+        />
+        <textarea
+          name="description"
+          placeholder="Description"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.description}
+          required
+        />
+        <input
+          name="latitude"
+          placeholder="Latitude"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.latitude}
+          required
+        />
+        <input
+          name="longitude"
+          placeholder="Longitude"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.longitude}
+          required
+        />
+        <input
+          name="imageUrl"
+          placeholder="Image URL"
+          className="text-black border p-2 rounded"
+          onChange={handleChange}
+          value={formData.imageUrl}
+          required
+        />
+        <button type="submit" className="bg-pink-500 text-white rounded p-2">
+          Create Marker
+        </button>
+      </form>
+    </div>
+  )}
+</div>
+
       </div>
 
+      {/* Map */}
       <div className="absolute inset-0 z-10">
         <MapContainer center={defaultPosition} zoom={13} style={{ width: '100%', height: '100%' }}>
           <TileLayer
@@ -185,23 +302,66 @@ const EventsMap = () => {
             attribution="© OpenStreetMap contributors"
           />
 
-          {markers.map((marker, index) => (
-            <Marker key={index} position={[marker.lat, marker.lng]} icon={createCustomIcon(marker.imageUrl)}>
-              <Popup>
-                <MarkerCard marker={marker} />
-              </Popup>
-            </Marker>
+          {locations.map((location, index) => (
+            <Marker
+            key={location.name} // or location.id if exists
+            position={[location.latitude, location.longitude]}
+            icon={createCustomIcon()}
+          />
           ))}
+          {customCards.map((card, index) => (
+  <Marker
+    key={card.id || `${card.name}-${index}`} // fallback to unique combo
+    position={[card.latitude, card.longitude]} icon={cardIcon}
+  >
+  <Popup>
+    <div className="relative w-[250px] h-[380px] overflow-hidden rounded-lg shadow-lg text-white">
+      {/* Background image covering full card */}
+      <img
+        src={placeCard.src}
+        alt="Card Background"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      />
+
+      {/* Content overlay */}
+      <div className="w-[250px] p-4 bg-white rounded-xl shadow-lg text-black space-y-3 text-sm">
+  {/* Image */}
+  <div className="w-full h-[120px] overflow-hidden rounded">
+    <img
+      src={card.imageUrl}
+      alt={card.name}
+      className="w-full h-full object-cover"
+    />
+  </div>
+
+  {/* Text Info */}
+  <div className="space-y-1">
+    <h2 className="text-lg font-bold">{card.name}</h2>
+    <p><span className="font-semibold">Type:</span> {card.type}</p>
+    <p><span className="font-semibold">Ability:</span> {card.ability}</p>
+    <p><span className="font-semibold">Power:</span> {card.power}</p>
+  </div>
+
+  {/* Description */}
+  <p className="italic text-xs text-gray-600">"{card.description}"</p>
+
+  {/* Optional footer or tag/icons can go here */}
+</div>
+
+    </div>
+  </Popup>
+</Marker>
+))}
+
 
           {userLocation && (
             <Marker
               position={[userLocation.lat, userLocation.lng]}
               icon={userIcon}
-              interactive={false} // disables hover, click, focus
-              keyboard={false} // disables focus via tab
+              interactive={false}
+              keyboard={false}
             />
           )}
-
         </MapContainer>
       </div>
     </div>
@@ -209,3 +369,4 @@ const EventsMap = () => {
 };
 
 export default EventsMap;
+
