@@ -10,6 +10,8 @@ interface Card {
   imageUrl: string;
   description: string;
   rarity: string;
+  latitude: number;
+  longitude: number;
 }
 
 const ItemPage = () => {
