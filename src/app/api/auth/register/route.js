@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-const uri ="mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster"
+const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -14,10 +14,7 @@ const client = new MongoClient(uri, {
 
 export async function POST(req) {
   try {
-    // Parse JSON body from the request
-    const { username, password, inventory } = await req.json();
-
-    // Log received data for debugging
+    const { username, password } = await req.json();
     console.log("Received data:", { username, password });
 
     if (!username || !password) {
@@ -25,29 +22,27 @@ export async function POST(req) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // Connect to MongoDB
     await client.connect();
     console.log("Connected to MongoDB!");
 
     const db = client.db("UGachaCluster");
     const usersCollection = db.collection("users");
 
-    // Check if user already exists
     const existingUser = await usersCollection.findOne({ username });
     if (existingUser) {
       console.log("User already exists:", username);
       return NextResponse.json({ error: "User already exists" }, { status: 400 });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert new user
+    // Insert new user with default packCount and empty cardInventory
     const result = await usersCollection.insertOne({
       username,
       password: hashedPassword,
       createdAt: new Date(),
-      inventory: inventory || [],
+      packCount: 1, // Default pack count
+      cardInventory: [], // Empty array for card inventory
     });
 
     if (!result.acknowledged) {
