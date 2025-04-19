@@ -34,6 +34,7 @@ const Packs = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="relative min-h-screen w-full">
