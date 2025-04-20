@@ -167,19 +167,19 @@ const Packs = () => {
         }
 
         .reveal-cards .card-1 .card-inner {
-          animation: fanLeftFarFlip 1s ease 0.3s forwards;
+          animation: fanLeftFarFlip 1s ease 1.5s forwards;
         }
 
         .reveal-cards .card-2 .card-inner {
-          animation: fanLeftFlip 1s ease 0.6s forwards;
+          animation: fanLeftFlip 1.5s ease 2s forwards;
         }
 
         .reveal-cards .card-3 .card-inner {
-          animation: fanRightFlip 1s ease 0.9s forwards;
+          animation: fanRightFlip 2s ease 2.5s forwards;
         }
 
         .reveal-cards .card-4 .card-inner {
-          animation: fanRightFarFlip 1s ease 1.2s forwards;
+          animation: fanRightFarFlip 3s ease 4s forwards;
         }
 
         @keyframes fanLeftFarFlip {
