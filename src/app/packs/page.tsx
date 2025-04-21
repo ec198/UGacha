@@ -23,38 +23,42 @@ const Packs = () => {
   const [isOpened, setIsOpened] = useState(false);
   const [showCards, setShowCards] = useState(false);
 
-  const handleOpenPack = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/packs/open');
-      if (!res.ok) throw new Error(`Failed to open pack: ${res.statusText}`);
-      const data = await res.json();
-      if (!data.pack || data.pack.length === 0) throw new Error('No cards returned.');
+    const handleOpenPack = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/packs/open');
+        if (!res.ok) throw new Error(`Failed to open pack: ${res.statusText}`);
+        const data = await res.json();
+        if (!data.pack || data.pack.length === 0) throw new Error('No cards returned.');
 
-      setPack(data.pack);
-      setIsOpened(true);
+        setPack(data.pack);
+        setIsOpened(true);
 
-      setTimeout(() => {
-        setShowCards(true);
-      }, 2000);
-    } catch (error: any) {
-      console.error('Error opening pack:', error);
-      alert(`Error: ${error.message}`);
-    } finally {
-      setTimeout(() => setLoading(false), 2500);
-    }
-  };
+        setTimeout(() => {
+          setShowCards(true);
+        }, 2000);
+      } catch (error: any) {
+        console.error('Error opening pack:', error);
+        alert(`Error: ${error.message}`);
+      } finally {
+        setTimeout(() => setLoading(false), 2500);
+      }
+    };
   
 
   return (
     <div className="packs-container">
       <div className="pack-wrapper">
-        <Image src={packBottomImg} alt="Pack Bottom" className="pack-bottom" />
-        <Image
-          src={packTopImg}
-          alt="Pack Top"
-          className={`pack-top ${isOpened ? 'animate-top-off' : ''}`}
-        />
+        <div className="pack-bottom-wrapper">
+          <Image src={packBottomImg} alt="Pack Bottom" className="pack-bottom" />
+        </div>
+        <div className="pack-top-wrapper">
+          <Image
+            src={packTopImg}
+            alt="Pack Top"
+            className={`pack-top ${isOpened ? 'animate-top-off' : ''}`}
+          />
+        </div>
 
         <div className={`cards ${showCards ? 'reveal-cards' : ''}`}>
           {pack.map((card, index) => (
@@ -97,10 +101,7 @@ const Packs = () => {
 
         .pack-bottom,
         .pack-top {
-          top: 0;
-          left: 0;
-          width: 100%;
-          position: absolute;
+          height: 150px;  
         }
 
         .pack-bottom {
@@ -117,18 +118,44 @@ const Packs = () => {
           animation: ripTopOff 2s ease-out forwards;
           transform-origin: center top; /* ✅ more natural peeling effect */
           pointer-events: none; /* ✅ avoid clicks during animation */
+          position: absolute;
+          top: 0;
         }
 
         @keyframes ripTopOff {
           0% {
-            transform: translateY(0) rotate(0deg);
+            transform: translateY(0) rotate(0deg) scale(1);
             opacity: 1;
           }
+          40% {
+            transform: translateY(-100px) rotate(-10deg) scale(1.05);
+          }
+          70% {
+            transform: translateY(-200px) rotate(-15deg) scale(1.1);
+          }
           100% {
-            transform: translateY(-300px) rotate(-20deg);
+            transform: translateY(-350px) rotate(-30deg) scale(1.2);
             opacity: 0;
           }
         }
+
+
+        .pack-top-wrapper,
+        .pack-bottom-wrapper {
+          position: absolute;
+          width: 100%;
+          top: 0;
+          left: 0;
+        }
+
+        .pack-bottom-wrapper {
+          z-index: 5;
+        }
+
+        .pack-top-wrapper {
+          z-index: 10;
+        }
+
 
         .cards {
           position: absolute;
@@ -138,7 +165,7 @@ const Packs = () => {
           display: flex;
           justify-content: center;
           align-items: center;
-          z-index: 1;
+          z-index: 11;
           opacity: 0;
           transition: opacity 0.3s ease;
         }

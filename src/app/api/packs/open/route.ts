@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
 
+const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
 
 interface CardInventoryItem {
   _id: ObjectId;
@@ -16,6 +17,16 @@ interface User {
   packCount: number;
 }
 
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+await client.connect();
+const db = client.db("UGachaCluster");
 const usersCollection = db.collection<User>('users');
 
 
