@@ -29,11 +29,15 @@ const Packs = () => {
       setIsOpened(false);
       setShowCards(false); // Hide previous cards
   
-      setTimeout(() => {
-        const top = document.querySelector('.pack-top');
-        void top?.offsetWidth;
+      requestAnimationFrame(() => {
+        const top = document.querySelector('.pack-top') as HTMLElement | null;
+        if (top) {
+          void top.offsetWidth;
+        }
         setIsOpened(true);
-      }, 0);
+      });
+      
+      
   
       const res = await fetch('/api/packs/open');
       if (!res.ok) throw new Error(`Failed to open pack: ${res.statusText}`);
