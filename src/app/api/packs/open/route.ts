@@ -3,6 +3,22 @@ import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+
+interface CardInventoryItem {
+  _id: ObjectId;
+  count: number;
+}
+
+interface User {
+  username: string;
+  password: string;
+  cardInventory: CardInventoryItem[];
+  packCount: number;
+}
+
+const usersCollection = db.collection<User>('users');
+
+
 const rarityWeights = [
   { rarity: "common", weight: 89 },
   { rarity: "rare", weight: 10 },
@@ -19,7 +35,7 @@ function getRandomRarity(weights: typeof rarityWeights) {
   }
 }
 
-const SECRET_KEY = 'your_secret_key'; // 🔒 Make sure this matches your login JWT key
+const SECRET_KEY = 'your_secret_key';
 
 export async function GET(req: Request) {
   try {
@@ -31,15 +47,12 @@ export async function GET(req: Request) {
     const cardsCollection = db.collection('trainingCards');
     const usersCollection = db.collection('users');
 
-    // Get JWT from cookies
     const cookieHeader = req.headers.get('cookie');
     const token = cookieHeader?.split('; ').find(c => c.startsWith('token='))?.split('=')[1];
-
     if (!token) {
       return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
     }
 
-    // Decode JWT
     let decoded: any;
     try {
       decoded = jwt.verify(token, SECRET_KEY);
@@ -54,18 +67,15 @@ export async function GET(req: Request) {
 
     // 🎴 Generate a 4-card pack
     const pack = [];
-
     for (let i = 0; i < 3; i++) {
       const rarity = getRandomRarity([
         { rarity: "common", weight: 85 },
         { rarity: "rare", weight: 15 },
       ]);
-
       const card = await cardsCollection.aggregate([
         { $match: { rarity } },
         { $sample: { size: 1 } },
       ]).next();
-
       if (card) pack.push(card);
     }
 
@@ -74,22 +84,44 @@ export async function GET(req: Request) {
       { $match: { rarity: lastRarity } },
       { $sample: { size: 1 } },
     ]).next();
-
     if (lastCard) pack.push(lastCard);
 
     if (pack.length !== 4) {
-      console.error('❌ Not enough cards found:', pack.length);
       return NextResponse.json({ error: 'Could not fetch 4 cards' }, { status: 500 });
     }
 
-    // Add card IDs to user's inventory
-    const cardIds = pack.map(card => new ObjectId(card._id));
-    await usersCollection.updateOne(
-      { username: decoded.username },
-      { $addToSet: { inventory: { $each: cardIds } } } // Avoid duplicates
-    );
+    //Update the cardID into db
+    for (const card of pack) {
+      const cardId = card._id; // use directly
+    
+      // Try to increment count if card already in inventory
+      const updateResult = await usersCollection.updateOne(
+        {
+          username: decoded.username,
+          "cardInventory._id": cardId,
+        },
+        {
+          $inc: { "cardInventory.$.count": 1 },
+        }
+      );
+    
+      // If the card wasn't found, push it with count 1
+      if (updateResult.modifiedCount === 0) {
+        await usersCollection.updateOne(
+          { username: decoded.username },
+          {
+            $push: {
+              cardInventory: {
+                _id: cardId,
+                count: 1,
+              },
+            },
+          }
+        );
+      }
+    }
+    
 
-    // Send back the pack
     return NextResponse.json({ pack });
   } catch (error) {
     console.error('❌ Error opening pack:', error);
