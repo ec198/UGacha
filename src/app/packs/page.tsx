@@ -23,27 +23,42 @@ const Packs = () => {
   const [isOpened, setIsOpened] = useState(false);
   const [showCards, setShowCards] = useState(false);
 
-    const handleOpenPack = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('/api/packs/open');
-        if (!res.ok) throw new Error(`Failed to open pack: ${res.statusText}`);
-        const data = await res.json();
-        if (!data.pack || data.pack.length === 0) throw new Error('No cards returned.');
-
-        setPack(data.pack);
+  const handleOpenPack = async () => {
+    try {
+      setLoading(true);
+      setIsOpened(false);
+      setShowCards(false); // Hide previous cards
+  
+      setTimeout(() => {
+        const top = document.querySelector('.pack-top');
+        void top?.offsetWidth;
         setIsOpened(true);
-
-        setTimeout(() => {
-          setShowCards(true);
-        }, 2000);
-      } catch (error: any) {
-        console.error('Error opening pack:', error);
-        alert(`Error: ${error.message}`);
-      } finally {
-        setTimeout(() => setLoading(false), 2500);
-      }
-    };
+      }, 0);
+  
+      const res = await fetch('/api/packs/open');
+      if (!res.ok) throw new Error(`Failed to open pack: ${res.statusText}`);
+      const data = await res.json();
+      if (!data.pack || data.pack.length === 0) throw new Error('No cards returned.');
+  
+      setPack(data.pack);
+  
+      setTimeout(() => {
+        setShowCards(true);
+      }, 2000);
+  
+      // ✅ Reset isOpened so the button shows again
+      setTimeout(() => {
+        setIsOpened(false);
+      }, 5000); // after animations finish
+    } catch (error: any) {
+      console.error('Error opening pack:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setTimeout(() => setLoading(false), 2500);
+    }
+  };
+  
+  
   
 
   return (
