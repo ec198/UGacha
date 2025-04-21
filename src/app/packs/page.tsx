@@ -76,7 +76,7 @@ const Packs = () => {
         </div>
 
         {!isOpened && (
-          <button onClick={handleOpenPack} className="open-btn">
+          <button onClick={handleOpenPack} className="open-btn text-black">
             {loading ? 'Opening...' : 'Open Pack'}
           </button>
         )}
