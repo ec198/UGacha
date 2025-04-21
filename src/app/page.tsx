@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Content from "@/components/Content";
-import './index.css'; 
+// import './index.css'; 
 
 export default function Home() {
 
