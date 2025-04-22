@@ -4,13 +4,14 @@ const CardInv = ({ cards }) => {
     }
   
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6"> {/* Increase gap between the cards */}
         {cards.map(card => (
           <div
             key={card._id}
-            className={`bg-white rounded-xl shadow-lg p-4 ${
+            className={`bg-white rounded-xl shadow-lg p-6 ${ // Add more padding to the card itself
+              card.rarity === "common" ? "border-1 border-black" : 
               card.rarity === "rare" ? "border-4 border-red-500" : 
-              card.rarity === "ultraRare" ? "border-4 border-yellow-500" : 
+              card.rarity === "ultrarare" ? "border-4 border-yellow-500" : 
               ""
             }`}
           >
@@ -20,15 +21,15 @@ const CardInv = ({ cards }) => {
             <p
               className={`text-center ${
                 card.rarity === "common"
-                  ? "text-gray-500"
+                  ? "text-gray-300"
                   : card.rarity === "rare"
                   ? "text-red-500"
-                  : card.rarity === "ultraRare"
+                  : card.rarity === "ultrarare"
                   ? "text-yellow-500"
                   : "text-gray-500" // fallback if rarity is undefined or something else
               }`}
             >
-              {card.rarity === "ultraRare" ? "Ultra Rare" : 
+              {card.rarity === "ultrarare" ? "Ultra Rare" : 
                card.rarity === "rare" ? "Rare" : 
                card.rarity === "common" ? "Common" : card.rarity}
             </p>
