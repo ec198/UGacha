@@ -85,7 +85,7 @@ const Content = () => {
 
       {/* Items Section */}
       {view === 'items' && (
-        <div ref={itemsSectionRef} className="py-8 bg-gray-100 relative">
+        <div ref={itemsSectionRef} className="py-8 bg-gray-100 relative" style={{ minHeight: '200vh' }}>
           <button
             onClick={handleBackToHome}
             className="fixed top-4 left-4 px-6 py-3 text-lg font-semibold bg-white text-black rounded-md hover:bg-gray-300 transition z-50"
