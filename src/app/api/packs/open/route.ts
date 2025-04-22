@@ -29,7 +29,6 @@ await client.connect();
 const db = client.db("UGachaCluster");
 const usersCollection = db.collection<User>('users');
 
-
 const rarityWeights = [
   { rarity: "common", weight: 89 },
   { rarity: "rare", weight: 10 },
@@ -76,7 +75,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // 🎴 Generate a 4-card pack
+    // 🌴 Generate a 4-card pack
     const pack = [];
     for (let i = 0; i < 3; i++) {
       const rarity = getRandomRarity([
@@ -101,11 +100,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Could not fetch 4 cards' }, { status: 500 });
     }
 
-    //Update the cardID into db
+    // Update the cardID into db
     for (const card of pack) {
-      const cardId = card._id; // use directly
-    
-      // Try to increment count if card already in inventory
+      const cardId = card._id;
+
       const updateResult = await usersCollection.updateOne(
         {
           username: decoded.username,
@@ -115,8 +113,7 @@ export async function GET(req: Request) {
           $inc: { "cardInventory.$.count": 1 },
         }
       );
-    
-      // If the card wasn't found, push it with count 1
+
       if (updateResult.modifiedCount === 0) {
         await usersCollection.updateOne(
           { username: decoded.username },
@@ -126,12 +123,17 @@ export async function GET(req: Request) {
                 _id: cardId,
                 count: 1,
               },
-            },
+            } as any
           }
         );
       }
     }
-    
+
+    // Decrease the user's pack count by 1
+    await usersCollection.updateOne(
+      { username: decoded.username },
+      { $inc: { packCount: -1 } }
+    );
 
     return NextResponse.json({ pack });
   } catch (error) {
