@@ -1,10 +1,11 @@
 const CardInv = ({ cards }) => {
     if (!cards || cards.length === 0) {
-      return <p className="text-white text-center">No cards in inventory.</p>;
+      return <p className="text-black text-center">There are currently no cards in inventory.</p>;
     }
   
+    
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6"> {/* Increase gap between the cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-6"> {/* Increase gap between the cards */}
         {cards.map(card => (
           <div
             key={card._id}
@@ -21,12 +22,12 @@ const CardInv = ({ cards }) => {
             <p
               className={`text-center ${
                 card.rarity === "common"
-                  ? "text-gray-300"
+                  ? "text-gray-400"
                   : card.rarity === "rare"
                   ? "text-red-500"
                   : card.rarity === "ultraRare"
                   ? "text-yellow-500"
-                  : "text-gray-500" // fallback if rarity is undefined or something else
+                  : "text-gray-500" // default color if none of the rarities above
               }`}
             >
               {card.rarity === "ultraRare" ? "Ultra Rare" : 
@@ -34,7 +35,7 @@ const CardInv = ({ cards }) => {
                card.rarity === "common" ? "Common" : card.rarity}
             </p>
   
-            <p className="text-center text-gray-500">x{card.count}</p>
+            <p className="text-center text-gray-700">x{card.count}</p>
           </div>
         ))}
       </div>
