@@ -17,7 +17,6 @@ const SECRET_KEY = "your_secret_key"; // Use the same secret as in signin route
 // MongoDB Connection
 const connectToDatabase = async () => {
   try {
-    // No need to check isConnected anymore
     await client.connect();
     console.log("Connected to MongoDB");
   } catch (error) {
@@ -26,13 +25,10 @@ const connectToDatabase = async () => {
   }
 };
 
-// JWT Authentication Middleware
 export async function GET(req) {
   try {
-    // Connect to MongoDB
     await connectToDatabase();
 
-    // Retrieve the JWT token from cookies
     const cookieHeader = req.headers.get("cookie");
     const token = cookieHeader?.split("; ").find(c => c.startsWith("token="))?.split("=")[1];
 
@@ -43,7 +39,6 @@ export async function GET(req) {
       );
     }
 
-    // Verify the JWT token
     let decoded;
     try {
       decoded = jwt.verify(token, SECRET_KEY);
@@ -54,7 +49,6 @@ export async function GET(req) {
       );
     }
 
-    // Fetch user from MongoDB using the decoded username
     const db = client.db("UGachaCluster");
     const usersCollection = db.collection("users");
 
@@ -66,9 +60,12 @@ export async function GET(req) {
       );
     }
 
-    // Return user data (you can customize the response here)
     return new NextResponse(
-      JSON.stringify({ username: user.username }),
+      JSON.stringify({ 
+        username: user.username, 
+        cardInventory: user.cardInventory,
+        packCount: user.packCount ?? 0 // ✅ This line ensures packCount is returned
+      }),
       { status: 200 }
     );
 

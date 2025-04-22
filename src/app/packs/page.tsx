@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import backOfCardImg from '@/assets/BackOfCard.png';
 import packTopImg from '@/assets/Pack Top.png';
@@ -23,6 +23,19 @@ const Packs = () => {
   const [isOpened, setIsOpened] = useState(false);
   const [showCards, setShowCards] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [packCount, setPackCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchPackCount = async () => {
+      const res = await fetch('/api/auth/user');
+      if (res.ok) {
+        const data = await res.json();
+        setPackCount(data.packCount ?? 0);
+      }
+    };
+
+    fetchPackCount();
+  }, []);
 
   const handleOpenPack = async () => {
     try {
@@ -32,9 +45,7 @@ const Packs = () => {
 
       requestAnimationFrame(() => {
         const top = document.querySelector('.pack-top') as HTMLElement | null;
-        if (top) {
-          void top.offsetWidth;
-        }
+        if (top) void top.offsetWidth;
         setIsOpened(true);
       });
 
@@ -44,6 +55,7 @@ const Packs = () => {
       if (!data.pack || data.pack.length === 0) throw new Error('No cards returned.');
 
       setPack(data.pack);
+      setPackCount((prev) => Math.max(prev - 1, 0));
 
       setTimeout(() => {
         setShowCards(true);
@@ -95,14 +107,14 @@ const Packs = () => {
           ))}
         </div>
 
-        {!isOpened && (
+        {!isOpened && packCount > 0 && (
           <button onClick={handleOpenPack} className="open-btn text-black">
             {loading ? 'Opening...' : 'Open Pack'}
           </button>
         )}
       </div>
 
-      {/* Style block must be inside the JSX */}
+
       <style jsx>{`
         .packs-container {
           display: flex;
