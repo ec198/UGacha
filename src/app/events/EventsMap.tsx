@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import pinkBackground from '@/assets/pink-background.jpg';
 import defaultIcon from '@/assets/image.png'; // Custom marker icon
@@ -25,6 +25,7 @@ const cardIcon = new L.Icon({
 
 const EventsMap = () => {
   const [locations, setLocations] = useState<any[]>([]);
+  const hasFetched = useRef(false); // ✅ Prevents double-fetch in dev
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [missionProgress, setMissionProgress] = useState<{
     visited: string[]; // or use location.name if no id
@@ -47,8 +48,10 @@ const EventsMap = () => {
   const [showForm, setShowForm] = useState(false);
   const [customCards, setCustomCards] = useState<any[]>([]);
 
-  // Fetch random location cards
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+  
     fetch('/api/locationcards')
       .then((res) => res.json())
       .then((data) => {
@@ -57,6 +60,7 @@ const EventsMap = () => {
       })
       .catch((err) => console.error('Failed to fetch location cards:', err));
   }, []);
+  
 
   // Watch user location
   useEffect(() => {
@@ -199,7 +203,8 @@ const EventsMap = () => {
           <p className="text-center font-semibold">
   {missionProgress.visited.length}/{missionProgress.total} Locations Visited
 </p>
-            <progress
+
+<progress
   value={missionProgress.visited.length}
   max={missionProgress.total}
   className="w-full mt-2"
@@ -297,76 +302,88 @@ const EventsMap = () => {
 
       {/* Map */}
       <div className="absolute inset-0 z-10">
-        <MapContainer center={defaultPosition} zoom={13} style={{ width: '100%', height: '100%' }}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="© OpenStreetMap contributors"
-          />
+      <MapContainer center={defaultPosition} zoom={13} style={{ width: '100%', height: '100%' }}>
+  <TileLayer
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    attribution="© OpenStreetMap contributors"
+  />
 
-{locations
-  .filter((location) => !missionProgress.visited.includes(location.name))
-  .map((location, index) => (
+  {locations.map((location, index) => {
+    const isVisited = missionProgress.visited.includes(location.name); // or location.id if exists
+
+    // Only render the marker if the location has not been visited
+    return (
+      !isVisited && (
+        <Marker
+          key={location.name} // or location.id if exists
+          position={[location.latitude, location.longitude]}
+          icon={createCustomIcon()}
+        />
+      )
+    );
+  })}
+
+  {customCards.map((card, index) => {
+    const isVisited = missionProgress.visited.includes(card.name); // or card.id if exists
+
+    // Only render the marker if the card location has not been visited
+    return (
+      !isVisited && (
+        <Marker
+          key={card.id || `${card.name}-${index}`} // fallback to unique combo
+          position={[card.latitude, card.longitude]}
+          icon={cardIcon}
+        >
+          <Popup>
+            <div className="relative w-[250px] h-[380px] overflow-hidden rounded-lg shadow-lg text-white">
+              {/* Background image covering full card */}
+              <img
+                src={placeCard.src}
+                alt="Card Background"
+                className="absolute inset-0 w-full h-full object-cover z-0"
+              />
+
+              {/* Content overlay */}
+              <div className="w-[250px] p-4 bg-white rounded-xl shadow-lg text-black space-y-3 text-sm">
+                {/* Image */}
+                <div className="w-full h-[120px] overflow-hidden rounded">
+                  <img
+                    src={card.imageUrl}
+                    alt={card.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Text Info */}
+                <div className="space-y-1">
+                  <h2 className="text-lg font-bold">{card.name}</h2>
+                  <p><span className="font-semibold">Type:</span> {card.type}</p>
+                  <p><span className="font-semibold">Ability:</span> {card.ability}</p>
+                  <p><span className="font-semibold">Power:</span> {card.power}</p>
+                </div>
+
+                {/* Description */}
+                <p className="italic text-xs text-gray-600">"{card.description}"</p>
+
+                {/* Optional footer or tag/icons can go here */}
+              </div>
+            </div>
+          </Popup>
+        </Marker>
+      )
+    );
+  })}
+
+  {userLocation && (
     <Marker
-      key={location.name}
-      position={[location.latitude, location.longitude]}
-      icon={createCustomIcon()}
+      position={[userLocation.lat, userLocation.lng]}
+      icon={userIcon}
+      interactive={false}
+      keyboard={false}
     />
-))}
+  )}
+</MapContainer>
 
-          {customCards.map((card, index) => (
-  <Marker
-    key={card.id || `${card.name}-${index}`} // fallback to unique combo
-    position={[card.latitude, card.longitude]} icon={cardIcon}
-  >
-  <Popup>
-    <div className="relative w-[250px] h-[380px] overflow-hidden rounded-lg shadow-lg text-white">
-      {/* Background image covering full card */}
-      <img
-        src={placeCard.src}
-        alt="Card Background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      />
-
-      {/* Content overlay */}
-      <div className="w-[250px] p-4 bg-white rounded-xl shadow-lg text-black space-y-3 text-sm">
-  {/* Image */}
-  <div className="w-full h-[120px] overflow-hidden rounded">
-    <img
-      src={card.imageUrl}
-      alt={card.name}
-      className="w-full h-full object-cover"
-    />
-  </div>
-
-  {/* Text Info */}
-  <div className="space-y-1">
-    <h2 className="text-lg font-bold">{card.name}</h2>
-    <p><span className="font-semibold">Type:</span> {card.type}</p>
-    <p><span className="font-semibold">Ability:</span> {card.ability}</p>
-    <p><span className="font-semibold">Power:</span> {card.power}</p>
-  </div>
-
-  {/* Description */}
-  <p className="italic text-xs text-gray-600">"{card.description}"</p>
-
-  {/* Optional footer or tag/icons can go here */}
-</div>
-
-    </div>
-  </Popup>
-</Marker>
-))}
-
-
-          {userLocation && (
-            <Marker
-              position={[userLocation.lat, userLocation.lng]}
-              icon={userIcon}
-              interactive={false}
-              keyboard={false}
-            />
-          )}
-        </MapContainer>
       </div>
     </div>
   );
