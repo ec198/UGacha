@@ -105,183 +105,201 @@ const Packs = () => {
       {/* Style block must be inside the JSX */}
       <style jsx>{`
         .packs-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: pink;
-    overflow: visible;
-  }
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          background: pink;
+          overflow: visible;
+        }
 
-  .pack-wrapper {
-    position: relative;
-    width: 300px;
-    height: 420px;
-    overflow: visible;
-  }
+        .pack-wrapper {
+          position: relative;
+          width: 300px;
+          height: 420px;
+          overflow: visible;
+        }
 
-  .pack-bottom,
-  .pack-top {
-    height: 150px;
-  }
+        .pack-bottom,
+        .pack-top {
+          height: 150px;
+        }
 
-  .pack-bottom {
-    z-index: 5;
-  }
+        .pack-bottom {
+          z-index: 5;
+        }
 
-  .pack-top {
-    z-index: 10;
-    pointer-events: auto;
-    transition: transform 0.3s ease;
-  }
+        .pack-top {
+          z-index: 10;
+          pointer-events: auto;
+          transition: transform 0.3s ease;
+        }
 
-  .pack-top.animate-top-off {
-    animation: ripTopOff 2s ease-out forwards;
-    transform-origin: center top;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-  }
+        .pack-top.animate-top-off {
+          animation: ripTopOff 2s ease-out forwards;
+          transform-origin: center top;
+          pointer-events: none;
+          position: absolute;
+          top: 0;
+        }
 
-  .pack-top-wrapper {
-    position: absolute;
-    width: 100%;
-    top: -10px; /* Move the top up a bit */
-    left: 0;
-  }
+        @keyframes ripTopOff {
+          0% {
+            transform: translateY(0) rotate(0deg) scale(1);
+            opacity: 1;
+          }
+          40% {
+            transform: translateY(-100px) rotate(-10deg) scale(1.05);
+          }
+          70% {
+            transform: translateY(-200px) rotate(-15deg) scale(1.1);
+          }
+          100% {
+            transform: translateY(-350px) rotate(-30deg) scale(1.2);
+            opacity: 0;
+          }
+        }
 
-  .pack-bottom-wrapper {
-    z-index: 5;
-  }
+        .pack-top-wrapper,
+        .pack-bottom-wrapper {
+          position: absolute;
+          width: 100%;
+          top: 0;
+          left: 0;
+        }
 
-  .pack-top-wrapper {
-    z-index: 10;
-  }
+        .pack-bottom-wrapper {
+          z-index: 5;
+        }
 
-  .cards {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 11;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
+        .pack-top-wrapper {
+          z-index: 10;
+        }
 
-  .reveal-cards {
-    opacity: 1;
-  }
+        .cards {
+          position: absolute;
+          top: 50px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 11;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
 
-  .card-wrapper {
-    width: 140px;
-    height: 210px;
-    perspective: 1000px;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-  }
+        .reveal-cards {
+          opacity: 1;
+        }
 
-  .reveal-cards .card-wrapper {
-    opacity: 1;
-  }
+        .card-wrapper {
+          width: 140px;
+          height: 210px;
+          perspective: 1000px;
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          opacity: 0;
+        }
 
-  .card-inner {
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-  }
+        .reveal-cards .card-wrapper {
+          opacity: 1;
+        }
 
-  .reveal-cards .card-1 .card-inner {
-    animation: fanLeftFarFlip 1s ease 1.5s forwards;
-  }
+        .card-inner {
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+        }
 
-  .reveal-cards .card-2 .card-inner {
-    animation: fanLeftFlip 1.5s ease 2s forwards;
-  }
+        .reveal-cards .card-1 .card-inner {
+          animation: fanLeftFarFlip 1s ease 1.5s forwards;
+        }
 
-  .reveal-cards .card-3 .card-inner {
-    animation: fanRightFlip 2s ease 2.5s forwards;
-  }
+        .reveal-cards .card-2 .card-inner {
+          animation: fanLeftFlip 1.5s ease 2s forwards;
+        }
 
-  .reveal-cards .card-4 .card-inner {
-    animation: fanRightFarFlip 3s ease 4s forwards;
-  }
+        .reveal-cards .card-3 .card-inner {
+          animation: fanRightFlip 2s ease 2.5s forwards;
+        }
 
-  @keyframes fanLeftFarFlip {
-    0% {
-      transform: rotateY(0deg) translateX(0) rotate(0deg);
-    }
-    100% {
-      transform: rotateY(180deg) translateX(-500px) rotate(-15deg) translateY(20px);
-    }
-  }
+        .reveal-cards .card-4 .card-inner {
+          animation: fanRightFarFlip 3s ease 4s forwards;
+        }
 
-  @keyframes fanLeftFlip {
-    0% {
-      transform: rotateY(0deg) translateX(0) rotate(0deg);
-    }
-    100% {
-      transform: rotateY(180deg) translateX(-210px) rotate(-5deg) translateY(-50px);
-    }
-  }
+        @keyframes fanLeftFarFlip {
+          0% {
+            transform: rotateY(0deg) translateX(0) rotate(0deg);
+          }
+          100% {
+            transform: rotateY(180deg) translateX(-500px) rotate(-15deg) translateY(20px);
+          }
+        }
 
-  @keyframes fanRightFlip {
-    0% {
-      transform: rotateY(0deg) translateX(0) rotate(0deg);
-    }
-    100% {
-      transform: rotateY(180deg) translateX(80px) rotate(5deg) translateY(-60px);
-    }
-  }
+        @keyframes fanLeftFlip {
+          0% {
+            transform: rotateY(0deg) translateX(0) rotate(0deg);
+          }
+          100% {
+            transform: rotateY(180deg) translateX(-210px) rotate(-5deg) translateY(-50px);
+          }
+        }
 
-  @keyframes fanRightFarFlip {
-    0% {
-      transform: rotateY(0deg) translateX(0) rotate(0deg);
-    }
-    100% {
-      transform: rotateY(180deg) translateX(370px) rotate(15deg) translateY(-20px);
-    }
-  }
+        @keyframes fanRightFlip {
+          0% {
+            transform: rotateY(0deg) translateX(0) rotate(0deg);
+          }
+          100% {
+            transform: rotateY(180deg) translateX(80px) rotate(5deg) translateY(-60px);
+          }
+        }
 
-  .card-front,
-  .card-back {
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    backface-visibility: hidden;
-    border-radius: 30px;
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+        @keyframes fanRightFarFlip {
+          0% {
+            transform: rotateY(0deg) translateX(0) rotate(0deg);
+          }
+          100% {
+            transform: rotateY(180deg) translateX(370px) rotate(15deg) translateY(-20px);
+          }
+        }
 
-  .card-front {
-    background: gray;
-  }
+        .card-front,
+        .card-back {
+          position: absolute;
+          width: 200%;
+          height: 200%;
+          backface-visibility: hidden;
+          border-radius: 30px;
+          background: white;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
-  .card-back {
-    transform: rotateY(180deg);
-  }
+        .card-front {
+          background: gray;
+        }
 
-  .open-btn {
-    position: absolute;
-    bottom: -60px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 24px;
-    background: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-  }
+        .card-back {
+          transform: rotateY(180deg);
+        }
+
+        .open-btn {
+          position: absolute;
+          bottom: -60px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 12px 24px;
+          background: white;
+          border: none;
+          border-radius: 12px;
+          font-weight: bold;
+          cursor: pointer;
+        }
 @media (max-width: 600px) {
   .packs-container {
     transform-origin: top center;
