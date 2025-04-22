@@ -26,6 +26,13 @@ const rarityLabels: Record<Card['rarity'], string> = {
   ultraRare: 'Ultra Rare',
 };
 
+// Border classes by rarity
+const rarityBorders: Record<Card['rarity'], string> = {
+  common: 'border border-black',
+  rare: 'border-4 border-red-500',
+  ultraRare: 'border-4 border-yellow-400',
+};
+
 const CardInv = ({ cards }: { cards: Card[] }) => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
@@ -35,12 +42,12 @@ const CardInv = ({ cards }: { cards: Card[] }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 p-6">
         {cards.map((card) => (
           <button
             key={card._id}
             onClick={() => setSelectedCard(card)}
-            className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center hover:shadow-lg hover:scale-[1.02] transition border border-black cursor-pointer"
+            className={`bg-white rounded-2xl shadow-md p-4 flex flex-col items-center hover:shadow-lg hover:scale-[1.02] transition cursor-pointer ${rarityBorders[card.rarity]}`}
           >
             <Image
               src={card.imageUrl}
