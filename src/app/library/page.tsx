@@ -5,8 +5,21 @@ import { useEffect, useState } from 'react';
 import pinkBackground from '@/assets/pink-background.jpg';
 import CardInv from '../../components/CardInv';
 
+type Card = {
+  _id: string;
+  name: string;
+  imageUrl: string;
+  description: string;
+  rarity: 'common' | 'rare' | 'ultraRare';
+};
+
+type InventoryItem = {
+  _id: string;
+  count: number;
+};
+
 const Library = () => {
-  const [cardInventory, setCardInventory] = useState([]);
+  const [cardInventory, setCardInventory] = useState<(Card & { count: number })[]>([]);
 
   useEffect(() => {
     const fetchInventoryAndCards = async () => {
@@ -19,30 +32,29 @@ const Library = () => {
           throw new Error(userData.message || 'Failed to fetch user');
         }
 
-        const username = userData.username;
-
         // Step 2: Use username to get inventory + cards
         const [invRes, cardsRes] = await Promise.all([
           fetch('/api/auth/user', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           }),
-          fetch('/api/cards')
+          fetch('/api/cards'),
         ]);
-        
 
-        const invData = await invRes.json();
-        const cardData = await cardsRes.json();
+        const invData: { cardInventory: InventoryItem[] } = await invRes.json();
+        const cardData: Card[] = await cardsRes.json();
 
         if (!invRes.ok || !cardsRes.ok) {
-          throw new Error(invData.error || cardData.error || 'Fetch failed');
+          throw new Error(invData.cardInventory ? 'Inventory fetch error' : 'Card fetch error');
         }
 
         // Step 3: Match card details with counts
-        const combined = invData.cardInventory.map((item) => {
-          const card = cardData.find((c) => c._id === item._id);
-          return card ? { ...card, count: item.count } : null;
-        }).filter(Boolean);
+        const combined = invData.cardInventory
+          .map((item: InventoryItem) => {
+            const card = cardData.find((c: Card) => c._id === item._id);
+            return card ? { ...card, count: item.count } : null;
+          })
+          .filter((card): card is Card & { count: number } => card !== null);
 
         setCardInventory(combined);
       } catch (error) {
