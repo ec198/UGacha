@@ -181,32 +181,32 @@ const EventsMap = () => {
             Go to the locations of the two cards to complete the mission!
           </p>
 
-        <ul className="space-y-2 text-black">
-          {locations.map((location, index) => {
-            const isVisited = missionProgress.visited.includes(location.name);
-            return (
-              <li key={location.name} className="text-sm">
-                {location.name} -{' '}
-                <span className={isVisited ? 'text-green-700' : 'text-red-700'}>
-                  {isVisited ? 'Visited' : 'Not Visited'}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-
+          <ul className="space-y-2 text-black">
+            {locations.map((location, index) => {
+              const isVisited = missionProgress.visited.includes(location.name);
+              return (
+                <li key={location.name} className="text-sm">
+                  {location.name} -{' '}
+                  <span className={isVisited ? 'text-green-700' : 'text-red-700'}>
+                    {isVisited ? 'Visited' : 'Not Visited'}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
 
           <div className="mt-4">
             <p className="text-center font-semibold text-black">
-              {missionProgress.visited}/{missionProgress.total} Locations Visited
+              {missionProgress.visited.length}/{missionProgress.total} Locations Visited
             </p>
             <progress
-              value={missionProgress.visited}
+              value={missionProgress.visited.length}
               max={missionProgress.total}
               className="w-full mt-2"
             />
           </div>
         </div>
+
 
         {/* Add Card Form */}
         {/* Add Card Form - Toggleable */}
