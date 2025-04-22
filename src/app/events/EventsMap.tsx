@@ -34,6 +34,8 @@ const EventsMap = () => {
     visited: [],
     total: 2,
   });
+  const [missionClaimed, setMissionClaimed] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -110,14 +112,36 @@ const EventsMap = () => {
           );
           return distance <= 0.1;
         })
-        .map((loc) => loc.name); // use loc.id if available
+        .map((loc) => loc.name);
   
-      setMissionProgress((prev) => ({
-        ...prev,
-        visited: Array.from(new Set([...prev.visited, ...newlyVisited])),
-      }));
+      setMissionProgress((prev) => {
+        const updatedVisited = Array.from(new Set([...prev.visited, ...newlyVisited]));
+        const justCompleted = updatedVisited.length === prev.total && prev.visited.length < prev.total;
+  
+        if (justCompleted && !missionClaimed) {
+          setMissionClaimed(true); // 👈 only allow once
+          fetch('/api/claim-mission', {
+            method: 'POST',
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                console.log('🎉 Mission claimed!');
+                // Optionally show UI feedback here
+              }
+            })
+            .catch((err) => console.error('Error claiming mission:', err));
+        }
+  
+        return {
+          ...prev,
+          visited: updatedVisited,
+        };
+      });
     }
-  }, [userLocation, locations]);
+  }, [userLocation, locations, missionClaimed]);
+  
+  
   
 
   const createCustomIcon = () =>
