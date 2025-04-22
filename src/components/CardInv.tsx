@@ -37,7 +37,7 @@ const CardInv = ({ cards }: { cards: Card[] }) => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   if (!cards || cards.length === 0) {
-    return <p className="text-white text-center">No cards in inventory.</p>;
+    return <p className="text-black text-center">There are currently no cards in your inventory.</p>;
   }
 
   return (

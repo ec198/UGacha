@@ -176,27 +176,28 @@ const EventsMap = () => {
 
         {/* Daily Mission UI */}
         <div>
-          <h3 className="font-bold text-xl text-center mb-2">Daily Mission</h3>
-          <p className="text-sm text-center mb-4">
+          <h3 className="font-bold text-xl text-center mb-2 text-black">Daily Mission</h3>
+          <p className="text-sm text-center mb-4 text-black">
             Go to the locations of the two cards to complete the mission!
           </p>
 
-          <ul className="space-y-2">
-  {locations.map((location, index) => {
-    const isVisited = missionProgress.visited.includes(location.name); // or location.id
-    return (
-      <li key={location.name} className="text-sm">
-        {location.name} -{' '}
-        <span className={isVisited ? 'text-green-500' : 'text-red-500'}>
-          {isVisited ? 'Visited' : 'Not Visited'}
-        </span>
-      </li>
-    );
-  })}
-</ul>
+        <ul className="space-y-2 text-black">
+          {locations.map((location, index) => {
+            const isVisited = missionProgress.visited.includes(location.name);
+            return (
+              <li key={location.name} className="text-sm">
+                {location.name} -{' '}
+                <span className={isVisited ? 'text-green-700' : 'text-red-700'}>
+                  {isVisited ? 'Visited' : 'Not Visited'}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+
 
           <div className="mt-4">
-            <p className="text-center font-semibold">
+            <p className="text-center font-semibold text-black">
               {missionProgress.visited}/{missionProgress.total} Locations Visited
             </p>
             <progress
@@ -211,7 +212,7 @@ const EventsMap = () => {
         {/* Add Card Form - Toggleable */}
 <div>
   <button
-    className="bg-pink-500 text-white rounded p-2 w-full"
+    className="bg-red-500 text-white rounded p-2 w-full"
     onClick={() => setShowForm((prev) => !prev)}
   >
     {showForm ? 'Close Form' : 'Add a Card'}
@@ -284,7 +285,7 @@ const EventsMap = () => {
           value={formData.imageUrl}
           required
         />
-        <button type="submit" className="bg-pink-500 text-white rounded p-2">
+        <button type="submit" className="bg-red-500 text-white rounded p-2">
           Create Marker
         </button>
       </form>
