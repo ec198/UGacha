@@ -9,6 +9,7 @@ const CardInv = ({ cards }) => {
           <div
             key={card._id}
             className={`bg-white rounded-xl shadow-lg p-4 ${
+              card.rarity === "common" ? "border-1 border-black" : 
               card.rarity === "rare" ? "border-4 border-red-500" : 
               card.rarity === "ultraRare" ? "border-4 border-yellow-500" : 
               ""
