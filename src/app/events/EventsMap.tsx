@@ -64,28 +64,39 @@ const EventsMap = () => {
   }, []);
   
 
-  // Watch user location
   useEffect(() => {
-    if (navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error watching location:', error);
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 1000,
-          timeout: 10000,
+  let watchId: number;
+
+  if ("geolocation" in navigator) {
+    watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        console.log("📍 Current location:", latitude, longitude);
+      },
+      (error) => {
+        console.error("❌ Geolocation error:", error);
+        if (error.code === error.PERMISSION_DENIED) {
+          alert("Please enable location access in your browser settings.");
         }
-      );
-      return () => navigator.geolocation.clearWatch(watchId);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
+      }
+    );
+  } else {
+    console.error("Geolocation not supported.");
+  }
+
+  return () => {
+    if (watchId !== undefined) {
+      navigator.geolocation.clearWatch(watchId);
     }
-  }, []);
+  };
+}, []);
+
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
