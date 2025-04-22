@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import ugacha from '@/assets/UGacha.png';
 
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const fetchUser = useCallback(async () => {
     try {
@@ -65,6 +66,11 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const navLinkClass = (href: string) =>
+    `px-3 py-2 rounded-md text-white hover:bg-gray-900 ${
+      pathname === href ? 'border-b-2 border-white' : ''
+    }`;
+
   return (
     <nav className="bg-black border-b-1 border-white">
       <div className="mx-auto max-w-10xl px-2 sm:px-6 lg:px-8">
@@ -85,11 +91,11 @@ const Navbar = () => {
           <div className="flex-1 hidden md:flex justify-center">
             {username && (
               <div className="flex space-x-4">
-                <a href="/" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Home</a>
-                <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
-                <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
-                <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
-                <a href="/events" className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Events</a>
+                <a href="/" className={navLinkClass('/')}>Home</a>
+                <a href="/library" className={navLinkClass('/library')}>Library</a>
+                <a href="/packs" className={navLinkClass('/packs')}>Packs</a>
+                <a href="/about" className={navLinkClass('/about')}>About</a>
+                <a href="/events" className={navLinkClass('/events')}>Events</a>
               </div>
             )}
           </div>
@@ -149,7 +155,7 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Mobile right-side buttons (login/register or sign out + settings) */}
+          {/* Mobile right-side buttons */}
           <div className="absolute right-4 top-5 md:hidden flex space-x-2 z-50">
             {username === null && (
               <>
@@ -189,16 +195,16 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu - only for logged in users */}
+      {/* Mobile menu */}
       {username && (
         <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
           <div className="flex flex-col items-center space-y-4 py-4">
             <span className="text-white"><b>Welcome, {username}!</b></span>
-            <a href="/" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Home</a>
-            <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
-            <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
-            <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
-            <a href="/events" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Events</a>
+            <a href="/" className={navLinkClass('/')}>Home</a>
+            <a href="/library" className={navLinkClass('/library')}>Library</a>
+            <a href="/packs" className={navLinkClass('/packs')}>Packs</a>
+            <a href="/about" className={navLinkClass('/about')}>About</a>
+            <a href="/events" className={navLinkClass('/events')}>Events</a>
           </div>
         </div>
       )}
