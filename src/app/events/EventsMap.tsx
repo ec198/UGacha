@@ -196,14 +196,15 @@ const EventsMap = () => {
 </ul>
 
           <div className="mt-4">
-            <p className="text-center font-semibold">
-              {missionProgress.visited}/{missionProgress.total} Locations Visited
-            </p>
+          <p className="text-center font-semibold">
+  {missionProgress.visited.length}/{missionProgress.total} Locations Visited
+</p>
             <progress
-              value={missionProgress.visited}
-              max={missionProgress.total}
-              className="w-full mt-2"
-            />
+  value={missionProgress.visited.length}
+  max={missionProgress.total}
+  className="w-full mt-2"
+/>
+
           </div>
         </div>
 
@@ -302,13 +303,16 @@ const EventsMap = () => {
             attribution="© OpenStreetMap contributors"
           />
 
-          {locations.map((location, index) => (
-            <Marker
-            key={location.name} // or location.id if exists
-            position={[location.latitude, location.longitude]}
-            icon={createCustomIcon()}
-          />
-          ))}
+{locations
+  .filter((location) => !missionProgress.visited.includes(location.name))
+  .map((location, index) => (
+    <Marker
+      key={location.name}
+      position={[location.latitude, location.longitude]}
+      icon={createCustomIcon()}
+    />
+))}
+
           {customCards.map((card, index) => (
   <Marker
     key={card.id || `${card.name}-${index}`} // fallback to unique combo
