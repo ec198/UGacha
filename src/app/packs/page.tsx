@@ -22,13 +22,14 @@ const Packs = () => {
   const [loading, setLoading] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
   const [showCards, setShowCards] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleOpenPack = async () => {
     try {
       setLoading(true);
       setIsOpened(false);
-      setShowCards(false); // Hide previous cards
-  
+      setShowCards(false);
+
       requestAnimationFrame(() => {
         const top = document.querySelector('.pack-top') as HTMLElement | null;
         if (top) {
@@ -36,24 +37,21 @@ const Packs = () => {
         }
         setIsOpened(true);
       });
-      
-      
-  
+
       const res = await fetch('/api/packs/open');
       if (!res.ok) throw new Error(`Failed to open pack: ${res.statusText}`);
       const data = await res.json();
       if (!data.pack || data.pack.length === 0) throw new Error('No cards returned.');
-  
+
       setPack(data.pack);
-  
+
       setTimeout(() => {
         setShowCards(true);
       }, 2000);
-  
-      // ✅ Reset isOpened so the button shows again
+
       setTimeout(() => {
         setIsOpened(false);
-      }, 5000); // after animations finish
+      }, 5000);
     } catch (error: any) {
       console.error('Error opening pack:', error);
       alert(`Error: ${error.message}`);
@@ -61,9 +59,6 @@ const Packs = () => {
       setTimeout(() => setLoading(false), 2500);
     }
   };
-  
-  
-  
 
   return (
     <div className="packs-container">
@@ -81,8 +76,14 @@ const Packs = () => {
 
         <div className={`cards ${showCards ? 'reveal-cards' : ''}`}>
           {pack.map((card, index) => (
-            <div key={card._id} className={`card-wrapper card-${index + 1}`}>
-              <div className="card-inner">
+            <div
+              key={card._id}
+              className={`card-wrapper card-${index + 1}`}
+              style={{ zIndex: hoveredIndex === index ? 999 : index }}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <div className="card-inner hover:scale-[1.40] transition-transform duration-300 cursor-pointer">
                 <div className="card-front">
                   <Image src={backOfCardImg} alt="Card Back" width={280} height={420} />
                 </div>
@@ -108,19 +109,19 @@ const Packs = () => {
           align-items: center;
           height: 100vh;
           background: pink;
-          overflow: visible; /* ✅ allow animation to overflow screen */
+          overflow: visible;
         }
 
         .pack-wrapper {
           position: relative;
           width: 300px;
           height: 420px;
-          overflow: visible; /* ✅ ensure packTop can escape */
+          overflow: visible;
         }
 
         .pack-bottom,
         .pack-top {
-          height: 150px;  
+          height: 150px;
         }
 
         .pack-bottom {
@@ -135,8 +136,8 @@ const Packs = () => {
 
         .pack-top.animate-top-off {
           animation: ripTopOff 2s ease-out forwards;
-          transform-origin: center top; /* ✅ more natural peeling effect */
-          pointer-events: none; /* ✅ avoid clicks during animation */
+          transform-origin: center top;
+          pointer-events: none;
           position: absolute;
           top: 0;
         }
@@ -158,7 +159,6 @@ const Packs = () => {
           }
         }
 
-
         .pack-top-wrapper,
         .pack-bottom-wrapper {
           position: absolute;
@@ -174,7 +174,6 @@ const Packs = () => {
         .pack-top-wrapper {
           z-index: 10;
         }
-
 
         .cards {
           position: absolute;
