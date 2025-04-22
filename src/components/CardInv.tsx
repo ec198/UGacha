@@ -1,61 +1,42 @@
-'use client';
-
-import { useState } from 'react';
-import Image from 'next/image';
-
-type Card = {
-  _id: string;
-  name: string;
-  imageUrl: string;
-  description: string;
-  rarity: 'common' | 'rare' | 'ultraRare';
-  count: number;
-};
-
-// Tailwind classes mapped to rarity
-const rarityColors: Record<Card['rarity'], string> = {
-  common: 'text-gray-400',
-  rare: 'text-red-500',
-  ultraRare: 'text-yellow-500',
-};
-
-// Display labels mapped to rarity
-const rarityLabels: Record<Card['rarity'], string> = {
-  common: 'Common',
-  rare: 'Rare',
-  ultraRare: 'Ultra Rare',
-};
-
-const CardInv = ({ cards }: { cards: Card[] }) => {
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-
-  if (!cards || cards.length === 0) {
-    return <p className="text-white text-center">No cards in inventory.</p>;
-  }
-
-  return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
-        {cards.map((card) => (
-          <button
+const CardInv = ({ cards }) => {
+    if (!cards || cards.length === 0) {
+      return <p className="text-black text-center">There are currently no cards in inventory.</p>;
+    }
+  
+    
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-6"> {/* Increase gap between the cards */}
+        {cards.map(card => (
+          <div
             key={card._id}
-            onClick={() => setSelectedCard(card)}
-            className="bg-white rounded-2xl shadow-md p-4 flex flex-col items-center hover:shadow-lg hover:scale-[1.02] transition border border-black cursor-pointer"
+            className={`bg-white rounded-xl shadow-lg p-6 ${ // Add more padding to the card itself
+              card.rarity === "common" ? "border-1 border-black" : 
+              card.rarity === "rare" ? "border-4 border-red-500" : 
+              card.rarity === "ultraRare" ? "border-4 border-yellow-500" : 
+              ""
+            }`}
           >
-            <Image
-              src={card.imageUrl}
-              alt={card.name}
-              width={200}
-              height={300}
-              className="rounded-xl pointer-events-none"
-            />
-            <h2 className="text-xl font-bold mt-2 text-black">{card.name}</h2>
-            <span className={`mt-1 text-xs font-semibold ${rarityColors[card.rarity]}`}>
-              {rarityLabels[card.rarity]}
-            </span>
-            <p className="text-sm text-gray-600 text-center">{card.description}</p>
-            <p className="text-sm text-black mt-1 font-semibold">x{card.count}</p>
-          </button>
+            <img src={card.imageUrl} alt={card.name} className="w-full h-auto rounded" />
+            <h2 className="text-center mt-2 font-semibold text-black">{card.name}</h2>
+  
+            <p
+              className={`text-center ${
+                card.rarity === "common"
+                  ? "text-gray-400"
+                  : card.rarity === "rare"
+                  ? "text-red-500"
+                  : card.rarity === "ultraRare"
+                  ? "text-yellow-500"
+                  : "text-gray-500" // default color if none of the rarities above
+              }`}
+            >
+              {card.rarity === "ultraRare" ? "Ultra Rare" : 
+               card.rarity === "rare" ? "Rare" : 
+               card.rarity === "common" ? "Common" : card.rarity}
+            </p>
+  
+            <p className="text-center text-gray-700">x{card.count}</p>
+          </div>
         ))}
       </div>
 
