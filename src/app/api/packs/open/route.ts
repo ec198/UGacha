@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/mongodb';
 import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
 
@@ -29,8 +30,9 @@ const db = client.db("UGachaCluster");
 const usersCollection = db.collection<User>('users');
 
 const rarityWeights = [
-  { rarity: "common", weight: 90 },
+  { rarity: "common", weight: 89 },
   { rarity: "rare", weight: 10 },
+  { rarity: "ultraRare", weight: 1000 }
 ];
 
 function getRandomRarity(weights: typeof rarityWeights) {
@@ -43,11 +45,11 @@ function getRandomRarity(weights: typeof rarityWeights) {
   }
 }
 
-export async function GET() {
+const SECRET_KEY = 'your_secret_key';
+
+export async function GET(req: Request) {
   try {
     const db = await connectDB();
-
-    // ✅ Safety check
     if (!db || typeof db.collection !== 'function') {
       throw new Error('Database connection failed or is invalid.');
     }
@@ -73,20 +75,17 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // 🎴 Generate a 4-card pack
+    // 🌴 Generate a 4-card pack
     const pack = [];
-
     for (let i = 0; i < 3; i++) {
       const rarity = getRandomRarity([
         { rarity: "common", weight: 85 },
         { rarity: "rare", weight: 15 },
       ]);
-
       const card = await cardsCollection.aggregate([
         { $match: { rarity } },
         { $sample: { size: 1 } },
       ]).next();
-
       if (card) pack.push(card);
     }
 
@@ -95,19 +94,16 @@ export async function GET() {
       { $match: { rarity: lastRarity } },
       { $sample: { size: 1 } },
     ]).next();
-
     if (lastCard) pack.push(lastCard);
 
     if (pack.length !== 4) {
-      console.error('❌ Not enough cards found:', pack.length);
       return NextResponse.json({ error: 'Could not fetch 4 cards' }, { status: 500 });
     }
 
-    //Update the cardID into db
+    // Update the cardID into db
     for (const card of pack) {
-      const cardId = card._id; // use directly
-    
-      // Try to increment count if card already in inventory
+      const cardId = card._id;
+
       const updateResult = await usersCollection.updateOne(
         {
           username: decoded.username,
@@ -117,8 +113,7 @@ export async function GET() {
           $inc: { "cardInventory.$.count": 1 },
         }
       );
-    
-      // If the card wasn't found, push it with count 1
+
       if (updateResult.modifiedCount === 0) {
         await usersCollection.updateOne(
           { username: decoded.username },
@@ -128,12 +123,17 @@ export async function GET() {
                 _id: cardId,
                 count: 1,
               },
-            },
+            } as any
           }
         );
       }
     }
-    
+
+    // Decrease the user's pack count by 1
+    await usersCollection.updateOne(
+      { username: decoded.username },
+      { $inc: { packCount: -1 } }
+    );
 
     return NextResponse.json({ pack });
   } catch (error) {
