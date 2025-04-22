@@ -17,6 +17,7 @@ type Card = {
   description: string;
 };
 
+
 const Packs = () => {
   const [pack, setPack] = useState<Card[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,6 +75,14 @@ const Packs = () => {
 
   return (
     <div className="packs-container">
+      <div className="pack-count-display">
+    <span>Packs Left: {packCount}</span>
+  </div>
+
+  <div className="pack-wrapper">
+    {/* ... all your current card/pack JSX ... */}
+  </div>
+
       <div className="pack-wrapper">
         <div className="pack-bottom-wrapper">
           <div className="pack-bottom">
@@ -124,17 +133,31 @@ const Packs = () => {
           background: pink;
           overflow: visible;
         }
+        .pack-count-display {
+          position: fixed; /* 👈 Changed from absolute to fixed */
+          top: 85px;
+          right: 16px;
+          background: rgba(0, 0, 0, 0.75);
+          padding: 8px 14px;
+          border-radius: 10px;
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          z-index: 1000; /* ensure it stays above pack content */
+          pointer-events: none; /* optional: avoid blocking clicks */
+        }
 
         .pack-wrapper {
           position: relative;
           width: 300px;
           height: 420px;
           overflow: visible;
+          left: -120px;
         }
 
         .pack-bottom,
         .pack-top {
-          height: 150px;
+          height: 120px;
         }
 
         .pack-bottom {
@@ -176,7 +199,7 @@ const Packs = () => {
         .pack-bottom-wrapper {
           position: absolute;
           width: 100%;
-          top: 0;
+          top: -20;
           left: 0;
         }
 
@@ -185,6 +208,7 @@ const Packs = () => {
         }
 
         .pack-top-wrapper {
+          top: -40px;
           z-index: 10;
         }
 
