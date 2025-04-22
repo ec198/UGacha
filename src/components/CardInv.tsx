@@ -42,7 +42,7 @@ const CardInv = ({ cards }: { cards: Card[] }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 p-6">
         {cards.map((card) => (
           <button
             key={card._id}
@@ -67,36 +67,43 @@ const CardInv = ({ cards }: { cards: Card[] }) => {
       </div>
 
       {selectedCard && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center pointer-events-none">
-          <div className="w-[90vw] max-w-md bg-white border border-gray-300 rounded-xl shadow-xl p-6 relative pointer-events-auto">
-            <button
-              onClick={() => setSelectedCard(null)}
-              className="absolute top-2 right-2 bg-gray-200 text-black px-2 py-1 rounded hover:bg-gray-300 cursor-pointer"
+        <div
+        className="fixed inset-0 z-50 flex justify-center items-center backdrop-blur-sm"
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
+      >      
+            <div
+            className={`w-[90vw] max-w-md bg-white rounded-xl shadow-xl p-6 relative ${rarityBorders[selectedCard.rarity]}`}
             >
-              ✕
+            <button
+                onClick={() => setSelectedCard(null)}
+                className="absolute top-2 right-2 bg-gray-200 text-black px-2 py-1 rounded hover:bg-gray-300 cursor-pointer"
+            >
+                ✕
             </button>
 
             <h2 className="text-black text-2xl font-bold mb-4 text-center">{selectedCard.name}</h2>
             <Image
-              src={selectedCard.imageUrl}
-              alt={selectedCard.name}
-              width={300}
-              height={450}
-              className="mx-auto rounded-xl"
+                src={selectedCard.imageUrl}
+                alt={selectedCard.name}
+                width={300}
+                height={450}
+                className="mx-auto rounded-xl"
             />
             <p className="text-black mt-4 text-center">{selectedCard.description}</p>
             <p className="text-black font-semibold mt-2 text-center">
-              Rarity:{' '}
-              <span className={rarityColors[selectedCard.rarity]}>
+                Rarity:{' '}
+                <span className={rarityColors[selectedCard.rarity]}>
                 {rarityLabels[selectedCard.rarity]}
-              </span>
+                </span>
             </p>
             <p className="text-black font-semibold mt-1 text-center">
-              You own: x{selectedCard.count}
+                You own: x{selectedCard.count}
             </p>
-          </div>
+            </div>
         </div>
-      )}
+        )}
+
+
     </>
   );
 };
