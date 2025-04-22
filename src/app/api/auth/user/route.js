@@ -68,9 +68,13 @@ export async function GET(req) {
 
     // Return user data (you can customize the response here)
     return new NextResponse(
-      JSON.stringify({ username: user.username }),
+      JSON.stringify({ 
+        username: user.username, 
+        cardInventory: user.cardInventory // 👈 Add this line
+      }),
       { status: 200 }
     );
+    
 
   } catch (error) {
     console.error("Error fetching user:", error);
