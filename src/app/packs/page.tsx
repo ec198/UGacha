@@ -17,6 +17,7 @@ type Card = {
   description: string;
 };
 
+
 const Packs = () => {
   const [pack, setPack] = useState<Card[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,16 +75,24 @@ const Packs = () => {
 
   return (
     <div className="packs-container">
+      <div className="pack-count-display">
+    <span>Packs Left: {packCount}</span>
+  </div>
+
+  <div className="pack-wrapper">
+    {/* ... all your current card/pack JSX ... */}
+  </div>
+
       <div className="pack-wrapper">
         <div className="pack-bottom-wrapper">
-          <Image src={packBottomImg} alt="Pack Bottom" className="pack-bottom" />
+          <div className="pack-bottom">
+            <Image src={packBottomImg} alt="Pack Bottom" />
+          </div>
         </div>
         <div className="pack-top-wrapper">
-          <Image
-            src={packTopImg}
-            alt="Pack Top"
-            className={`pack-top ${isOpened ? 'animate-top-off' : ''}`}
-          />
+          <div className={`pack-top ${isOpened ? 'animate-top-off' : ''}`}>
+            <Image src={packTopImg} alt="Pack Top" />
+          </div>
         </div>
 
         <div className={`cards ${showCards ? 'reveal-cards' : ''}`}>
@@ -124,17 +133,31 @@ const Packs = () => {
           background: pink;
           overflow: visible;
         }
+        .pack-count-display {
+          position: fixed; /* 👈 Changed from absolute to fixed */
+          top: 85px;
+          right: 16px;
+          background: rgba(0, 0, 0, 0.75);
+          padding: 8px 14px;
+          border-radius: 10px;
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          z-index: 1000; /* ensure it stays above pack content */
+          pointer-events: none; /* optional: avoid blocking clicks */
+        }
 
         .pack-wrapper {
           position: relative;
           width: 300px;
           height: 420px;
           overflow: visible;
+          left: -120px;
         }
 
         .pack-bottom,
         .pack-top {
-          height: 150px;
+          height: 120px;
         }
 
         .pack-bottom {
@@ -176,7 +199,7 @@ const Packs = () => {
         .pack-bottom-wrapper {
           position: absolute;
           width: 100%;
-          top: 0;
+          top: -20;
           left: 0;
         }
 
@@ -185,6 +208,7 @@ const Packs = () => {
         }
 
         .pack-top-wrapper {
+          top: -40px;
           z-index: 10;
         }
 
@@ -312,6 +336,120 @@ const Packs = () => {
           font-weight: bold;
           cursor: pointer;
         }
+@media (max-width: 600px) {
+  .packs-container {
+    transform-origin: top center;
+    height: auto;
+    padding-top: 100px;
+  }
+
+  .open-btn {
+    bottom: -30px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .cards {
+    position: relative;
+    top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    gap: 3px; /* Adjusted gap for mobile */
+  }
+
+  .card-wrapper {
+    width: 156px; /* Smaller card size for mobile */
+    height: 234px; /* Adjust height for mobile */
+    perspective: 1000px;
+    opacity: 1;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+
+  .card-front,
+  .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-front {
+    background: gray;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+  }
+
+  /* Adjusted mobile-specific animations to keep cards closer */
+  .reveal-cards .card-1 .card-inner {
+    animation: fanLeftFarFlipMobile 1s ease 1.5s forwards;
+  }
+
+  .reveal-cards .card-2 .card-inner {
+    animation: fanLeftFlipMobile 1.5s ease 2s forwards;
+  }
+
+  .reveal-cards .card-3 .card-inner {
+    animation: fanRightFlipMobile 2s ease 2.5s forwards;
+  }
+
+  .reveal-cards .card-4 .card-inner {
+    animation: fanRightFarFlipMobile 3s ease 4s forwards;
+  }
+
+  /* Mobile-friendly animation for fanLeft */
+  @keyframes fanLeftFarFlipMobile {
+    0% {
+      transform: rotateY(0deg) translateX(0) rotate(0deg);
+    }
+    100% {
+      transform: rotateY(180deg) translateX(-80px) rotate(0deg) translateY(-80px); /* Reduced translateX and Y */
+    }
+  }
+
+  @keyframes fanLeftFlipMobile {
+    0% {
+      transform: rotateY(0deg) translateX(0) rotate(0deg);
+    }
+    100% {
+      transform: rotateY(180deg) translateX(-80px) rotate(0deg) translateY(160px); /* Reduced translateX and Y */
+    }
+  }
+
+  /* Mobile-friendly animation for fanRight */
+  @keyframes fanRightFlipMobile {
+    0% {
+      transform: rotateY(0deg) translateX(0) rotate(0deg);
+    }
+    100% {
+      transform: rotateY(180deg) translateX(100px) rotate(0deg) translateY(-80px); /* Reduced translateX and Y */
+    }
+  }
+
+  @keyframes fanRightFarFlipMobile {
+    0% {
+      transform: rotateY(0deg) translateX(0) rotate(0deg);
+    }
+    100% {
+      transform: rotateY(180deg) translateX(100px) rotate(0deg) translateY(160px); /* Reduced translateX and Y */
+    }
+  }
+}
+
       `}</style>
     </div>
   );
