@@ -129,21 +129,21 @@ const EventsMap = () => {
         const updatedVisited = Array.from(new Set([...prev.visited, ...newlyVisited]));
         const justCompleted = updatedVisited.length === prev.total && prev.visited.length < prev.total;
   
-        if (justCompleted && !missionClaimed) {
-          setMissionClaimed(true); // 👈 only allow once
+        if (justCompleted) {
           fetch('/api/claim-mission', {
             method: 'POST',
+            credentials: 'include',  // <-- This line is the fix
           })
             .then((res) => res.json())
             .then((data) => {
               if (data.success) {
                 console.log('🎉 Mission claimed!');
-                // Optionally show UI feedback here
               }
             })
             .catch((err) => console.error('Error claiming mission:', err));
+          
         }
-  
+        
         return {
           ...prev,
           visited: updatedVisited,

@@ -1,9 +1,8 @@
-// /app/api/claim-mission/route.ts or /pages/api/claim-mission.ts (depending on your app structure)
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/mongodb';
 
-const SECRET_KEY = 'your_secret_key';
+const SECRET_KEY = 'your_secret_key'; // use an environment variable in production
 
 export async function POST(req: Request) {
   try {
@@ -24,10 +23,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // 🧠 Optional: check if the mission is already claimed to prevent abuse
+    const username = decoded.username;
 
     const result = await usersCollection.updateOne(
-      { username: decoded.username },
+      { username },
       { $inc: { packCount: 2 } }
     );
 
