@@ -29,11 +29,14 @@ await client.connect();
 const db = client.db("UGachaCluster");
 const usersCollection = db.collection<User>('users');
 
+
+//Generates chances for card per rarity to be pulled
 const rarityWeights = [
   { rarity: "common", weight: 89 },
   { rarity: "rare", weight: 10 },
-  { rarity: "ultraRare", weight: 1000 }
+  { rarity: "ultraRare", weight: 1 }
 ];
+
 
 function getRandomRarity(weights: typeof rarityWeights) {
   const total = weights.reduce((sum, r) => sum + r.weight, 0);
@@ -75,7 +78,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // 🌴 Generate a 4-card pack
+    // Generates 4 different cards from db to 
     const pack = [];
     for (let i = 0; i < 3; i++) {
       const rarity = getRandomRarity([
@@ -137,7 +140,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ pack });
   } catch (error) {
-    console.error('❌ Error opening pack:', error);
+    console.error('Error opening pack:', error);
     return NextResponse.json(
       { error: 'Failed to open pack', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }

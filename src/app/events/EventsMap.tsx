@@ -5,7 +5,7 @@ import L from 'leaflet';
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import pinkBackground from '@/assets/pink-background.jpg';
-import defaultIcon from '@/assets/image.png'; // Custom marker icon
+import defaultIcon from '@/assets/image.png'; 
 import placeCard from '@/assets/cardTemplates/place-card.png';
 
 
@@ -15,20 +15,19 @@ const defaultPosition = {
 };
 
 const cardIcon = new L.Icon({
-  iconUrl: placeCard.src, // if imported
-  // iconUrl: placeCard, // if using string path like "/place-card.png"
-  iconSize: [60, 84],      // tweak size as needed
-  iconAnchor: [30, 42],
+  iconUrl: placeCard.src, 
+  iconSize: [60, 84],      
   popupAnchor: [0, -40],
   className: '',
 });
 
+// New form for daily misisons and new custom card
 const EventsMap = () => {
   const [locations, setLocations] = useState<any[]>([]);
-  const hasFetched = useRef(false); // ✅ Prevents double-fetch in dev
+  const hasFetched = useRef(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [missionProgress, setMissionProgress] = useState<{
-    visited: string[]; // or use location.name if no id
+    visited: string[]; 
     total: number;
   }>({
     visited: [],
@@ -72,10 +71,10 @@ const EventsMap = () => {
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ lat: latitude, lng: longitude });
-        console.log("📍 Current location:", latitude, longitude);
+        console.log("Current location:", latitude, longitude);
       },
       (error) => {
-        console.error("❌ Geolocation error:", error);
+        console.error("Geolocation error:", error);
         if (error.code === error.PERMISSION_DENIED) {
           alert("Please enable location access in your browser settings.");
         }
@@ -132,7 +131,7 @@ const EventsMap = () => {
         if (justCompleted) {
           fetch('/api/claim-mission', {
             method: 'POST',
-            credentials: 'include',  // <-- This line is the fix
+            credentials: 'include',  
           })
             .then((res) => res.json())
             .then((data) => {
@@ -368,7 +367,7 @@ const EventsMap = () => {
   {locations.map((location, index) => {
     const isVisited = missionProgress.visited.includes(location.name); // or location.id if exists
 
-    // Only render the marker if the location has not been visited
+    // If not visited
     return (
       !isVisited && (
         <Marker
@@ -381,13 +380,13 @@ const EventsMap = () => {
   })}
 
   {customCards.map((card, index) => {
-    const isVisited = missionProgress.visited.includes(card.name); // or card.id if exists
+    const isVisited = missionProgress.visited.includes(card.name); 
 
-    // Only render the marker if the card location has not been visited
+
     return (
       !isVisited && (
         <Marker
-          key={card.id || `${card.name}-${index}`} // fallback to unique combo
+          key={card.id || `${card.name}-${index}`} 
           position={[card.latitude, card.longitude]}
           icon={cardIcon}
         >

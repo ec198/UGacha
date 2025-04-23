@@ -4,6 +4,7 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 
 const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
 
+//Mongo Connection
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -14,6 +15,7 @@ const client = new MongoClient(uri, {
 
 export async function POST(req) {
   try {
+    //Hashes Pass and Limits User/Pass info
     const { username, password } = await req.json();
     console.log("Received data:", { username, password });
 
@@ -36,15 +38,16 @@ export async function POST(req) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert new user with default packCount and empty cardInventory
+    // Create new user
     const result = await usersCollection.insertOne({
       username,
       password: hashedPassword,
       createdAt: new Date(),
-      packCount: 1, // Default pack count
-      cardInventory: [], // Empty array for card inventory
+      packCount: 2, 
+      cardInventory: [], 
     });
 
+    //Will Print Errors if found
     if (!result.acknowledged) {
       console.error("Failed to insert new user into MongoDB");
       return NextResponse.json({ error: "Failed to insert user" }, { status: 500 });
@@ -58,6 +61,6 @@ export async function POST(req) {
     return NextResponse.json({ error: "Internal Server Error", details: error.message }, { status: 500 });
 
   } finally {
-    await client.close(); // Ensure the connection is closed after operation
+    await client.close(); 
   }
 }

@@ -12,7 +12,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-const SECRET_KEY = "your_secret_key"; // Use the same secret as in signin route
+const SECRET_KEY = "your_secret_key"; 
 
 // MongoDB Connection
 const connectToDatabase = async () => {
@@ -64,7 +64,7 @@ export async function GET(req) {
       JSON.stringify({ 
         username: user.username, 
         cardInventory: user.cardInventory,
-        packCount: user.packCount ?? 0 // ✅ This line ensures packCount is returned
+        packCount: user.packCount ?? 0 
       }),
       { status: 200 }
     );

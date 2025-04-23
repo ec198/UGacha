@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import bgarch from '@/assets/pink-background.jpg'; // ⬅️ Import your background image
+import bgarch from '@/assets/pink-background.jpg'; 
 
 export default function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -24,8 +24,9 @@ export default function ChangePasswordPage() {
 
       const data = await res.json();
 
+      //Redirect for Pass
       if (res.ok) {
-        router.push('/'); // Redirect to homepage
+        router.push('/'); 
       } else {
         setError(data.error || 'Failed to change password.');
       }

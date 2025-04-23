@@ -11,7 +11,7 @@ export async function GET() {
     const db = client.db('UGachaCluster');
     const collection = db.collection('packlocation');
 
-    // Randomly pick 2 unique location cards
+    // Randomly pick 2 unique location cards to pin pack onto map
     const locations = await collection.aggregate([
       { $sample: { size: 2 } },
       { $project: { _id: 0, name: 1, latitude: 1, longitude: 1 } }

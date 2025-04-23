@@ -7,8 +7,8 @@ export async function GET() {
   const client = new MongoClient(uri);
   try {
     await client.connect();
-    const db = client.db('UGachaCluster'); // Make sure this matches Compass
-    const collection = db.collection('trainingCards'); // correct collection name
+    const db = client.db('UGachaCluster'); 
+    const collection = db.collection('trainingCards'); 
     const cards = await collection.find({}).toArray();
     return NextResponse.json(cards);
   } catch (err) {

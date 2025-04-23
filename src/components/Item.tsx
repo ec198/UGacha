@@ -1,5 +1,3 @@
-// Item.tsx
-
 interface ItemProps {
     item: {
       _id: number;

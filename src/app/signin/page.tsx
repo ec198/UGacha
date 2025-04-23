@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import bgarch from "@/assets/pink-background.jpg"; // 👈 Import your pink background
+import bgarch from "@/assets/pink-background.jpg"; 
 
 export default function SigninPage() {
   const [username, setUsername] = useState("");

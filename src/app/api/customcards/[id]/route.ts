@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
 
+//Deletes the custom card
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const client = new MongoClient(uri);
   try {

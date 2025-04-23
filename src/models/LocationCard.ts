@@ -15,7 +15,7 @@ const LocationCardSchema = new Schema<LocationCard>(
     longitude: { type: Number, required: true },
   },
   {
-    collection: 'packlocation', // 👈 ensure this points to the correct MongoDB collection
+    collection: 'packlocation',
   }
 );
 

@@ -13,7 +13,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-const SECRET_KEY = "your_secret_key"; // Change this to a secure key
+const SECRET_KEY = "your_secret_key"; 
 
 let cachedDb = null;
 
@@ -37,7 +37,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // Reuse MongoDB connection
     const db = await connectToDatabase();
     const usersCollection = db.collection("users");
 
@@ -52,12 +51,11 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
     }
 
-    // Generate JWT Token
+    // Generate JWT Token - to login
     const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
 
     const response = NextResponse.json({ message: "Login successful" }, { status: 200 });
 
-    // Set the JWT as an HttpOnly cookie (so it cannot be accessed by JavaScript)
     const isDev = process.env.NODE_ENV !== "production";
     response.headers.append("Set-Cookie", `token=${token}; Path=/; HttpOnly; ${isDev ? "" : "Secure;"} SameSite=Strict`);
 

@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import bgarch from '@/assets/pink-background.jpg'; // Background image
-import ugachaArt from '@/assets/UGacha-Art.png'; // Overlay image
+import bgarch from '@/assets/pink-background.jpg'; 
+import ugachaArt from '@/assets/UGacha-Art.png'; 
 import CardGallery from "@/components/CardGallery";
 
 const Content = () => {

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
 
-// POST: Create a new card
+//Making a new custom card
 export async function POST(req: NextRequest) {
   const client = new MongoClient(uri);
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET: Retrieve all cards
+//Getting all the customcards from db
 export async function GET(req: NextRequest) {
   const client = new MongoClient(uri);
 
@@ -57,7 +57,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// PUT: Update an existing card
+
+//Editing the kinds of customs
 export async function PUT(req: NextRequest) {
     const client = new MongoClient(uri);
   

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import bgarch from '@/assets/pink-background.jpg'; // 👈 Import background image
+import bgarch from '@/assets/pink-background.jpg'; 
 
 export default function DeleteAccountPage() {
   const [error, setError] = useState('');

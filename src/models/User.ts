@@ -5,7 +5,7 @@ const CardEntrySchema = new mongoose.Schema(
     _id: { type: mongoose.Schema.Types.ObjectId, ref: 'TrainingCard', required: true },
     count: { type: Number, default: 1 },
   },
-  { _id: false } // Prevents MongoDB from adding an extra _id to each entry
+  { _id: false }
 );
 
 const UserSchema = new mongoose.Schema({

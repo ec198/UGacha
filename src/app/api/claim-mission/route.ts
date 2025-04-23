@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/mongodb';
 
-const SECRET_KEY = 'your_secret_key'; // use an environment variable in production
+const SECRET_KEY = 'your_secret_key'; 
 
 export async function POST(req: Request) {
   try {

@@ -39,7 +39,7 @@ export async function DELETE(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Clear the token cookie
+    // Clearing token's cookie
     const res = NextResponse.json({ message: "Account deleted successfully" });
     res.headers.append("Set-Cookie", "token=; Path=/; HttpOnly; Max-Age=0; SameSite=Strict");
 

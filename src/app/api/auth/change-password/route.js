@@ -14,6 +14,7 @@ const client = new MongoClient(uri, {
   }
 });
 
+
 export async function PUT(req) {
   try {
     const { currentPassword, newPassword } = await req.json();
@@ -22,7 +23,7 @@ export async function PUT(req) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // Get JWT from cookies
+    // JWT cookies
     const cookie = req.headers.get("cookie");
     const token = cookie?.split("; ").find((c) => c.startsWith("token="))?.split("=")[1];
 

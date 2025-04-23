@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import Items from "@/components/Items";  // Import the Items component
-import UGAitems from "@/components/UGAitems.json";  // Import the items data
+import Items from "@/components/Items";  
+import UGAitems from "@/components/UGAitems.json";  
 import CardGallery from "@/components/CardGallery";
 
 const ItemsPage = () => {

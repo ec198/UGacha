@@ -1,6 +1,6 @@
 // src/app/api/cards/route.ts
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb'; // Adjust path as needed
+import connectDB from '@/lib/mongodb'; 
 
 export async function GET() {
   try {
@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json(
       cards.map(card => ({
         ...card,
-        _id: card._id.toString(), // Convert MongoDB ObjectId to string
+        _id: card._id.toString(), 
       }))
     );
   } catch (error) {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import bgarch from "@/assets/pink-background.jpg"; // 👈 Import the background image
+import bgarch from "@/assets/pink-background.jpg";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
