@@ -204,22 +204,67 @@ const CustomCardGallery = () => {
                   rows={4}
                 />
               </div>
+              <div>
+  <label htmlFor="imageUrl" className="block text-sm font-semibold">Image URL</label>
+  <input
+    type="text"
+    name="imageUrl"
+    value={formData.imageUrl}
+    onChange={handleInputChange}
+    className="w-full p-2 border border-gray-300 rounded"
+    placeholder="Image URL"
+    required
+  />
+</div>
 
-              <div className="flex justify-center space-x-4 mt-4">
-                <button
-                  type="button"
-                  className="py-2 px-4 bg-gray-300 rounded text-sm"
-                  onClick={() => setEditingCard(null)} // Close the form
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="py-2 px-4 bg-blue-600 text-white rounded text-sm"
-                >
-                  Save Changes
-                </button>
-              </div>
+
+<div className="flex justify-center space-x-4 mt-4">
+  <button
+    type="button"
+    className="py-2 px-4 bg-gray-300 rounded text-sm"
+    onClick={() => setEditingCard(null)}
+  >
+    Cancel
+  </button>
+
+  <button
+    type="submit"
+    className="py-2 px-4 bg-blue-600 text-white rounded text-sm"
+  >
+    Save Changes
+  </button>
+
+  <button
+    type="button"
+    className="py-2 px-4 bg-red-600 text-white rounded text-sm"
+    onClick={async () => {
+      if (confirm('Are you sure you want to delete this card?')) {
+        try {
+          const res = await fetch(`/api/customcards/${formData._id}`, {
+            method: 'DELETE',
+          });
+
+          if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.error || 'Failed to delete card');
+          }
+
+          // Remove deleted card from state
+          setCustomCards((prev) =>
+            prev.filter((card) => card._id !== formData._id)
+          );
+
+          setEditingCard(null); // Close the modal
+        } catch (err) {
+          console.error('Error deleting card:', err);
+        }
+      }
+    }}
+  >
+    Delete
+  </button>
+</div>
+
             </form>
           </div>
         </div>
