@@ -26,7 +26,7 @@ const Library = () => {
   useEffect(() => {
     const fetchInventoryAndCards = async () => {
       try {
-        // Step 1: Get user info from token
+        //Get user info from token
         const userRes = await fetch('/api/auth/user');
         const userData = await userRes.json();
 
@@ -34,7 +34,7 @@ const Library = () => {
           throw new Error(userData.message || 'Failed to fetch user');
         }
 
-        // Step 2: Use username to get inventory + cards
+        //Use username to get inventory + cards
         const [invRes, cardsRes] = await Promise.all([
           fetch('/api/auth/user', {
             method: 'GET',
@@ -50,7 +50,7 @@ const Library = () => {
           throw new Error(invData.cardInventory ? 'Inventory fetch error' : 'Card fetch error');
         }
 
-        // Step 3: Match card details with counts
+        //Match card details with counts
         const combined = invData.cardInventory
           .map((item: InventoryItem) => {
             const card = cardData.find((c: Card) => c._id === item._id);

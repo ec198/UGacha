@@ -42,7 +42,7 @@ const CardInv = ({ cards }: { cards: Card[] }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 p-6">
         {cards.map((card) => (
           <button
             key={card._id}
