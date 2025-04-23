@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import pinkBackground from '@/assets/pink-background.jpg';
 import CardInv from '../../components/CardInv';
+import CustomCardGallery from '@/components/CustomCardGallery';
+
 
 type Card = {
   _id: string;
@@ -74,10 +76,11 @@ const Library = () => {
         className="absolute inset-0 object-cover"
       />
       <div className="relative z-10 p-6">
-        <h1 className="text-4xl font-bold text-center text-white mb-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+        <h1 className="text-4xl font-bold text-center text-white mb-6 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
           Library
         </h1>
         <CardInv cards={cardInventory} />
+        <CustomCardGallery />
       </div>
     </div>
   );

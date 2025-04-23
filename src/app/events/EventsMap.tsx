@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import pinkBackground from '@/assets/pink-background.jpg';
 import defaultIcon from '@/assets/image.png'; // Custom marker icon
@@ -25,6 +25,7 @@ const cardIcon = new L.Icon({
 
 const EventsMap = () => {
   const [locations, setLocations] = useState<any[]>([]);
+  const hasFetched = useRef(false); // ✅ Prevents double-fetch in dev
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [missionProgress, setMissionProgress] = useState<{
     visited: string[]; // or use location.name if no id
@@ -33,6 +34,8 @@ const EventsMap = () => {
     visited: [],
     total: 2,
   });
+  const [missionClaimed, setMissionClaimed] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -47,8 +50,10 @@ const EventsMap = () => {
   const [showForm, setShowForm] = useState(false);
   const [customCards, setCustomCards] = useState<any[]>([]);
 
-  // Fetch random location cards
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+  
     fetch('/api/locationcards')
       .then((res) => res.json())
       .then((data) => {
@@ -57,29 +62,41 @@ const EventsMap = () => {
       })
       .catch((err) => console.error('Failed to fetch location cards:', err));
   }, []);
+  
 
-  // Watch user location
   useEffect(() => {
-    if (navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error watching location:', error);
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 1000,
-          timeout: 10000,
+  let watchId: number;
+
+  if ("geolocation" in navigator) {
+    watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        console.log("📍 Current location:", latitude, longitude);
+      },
+      (error) => {
+        console.error("❌ Geolocation error:", error);
+        if (error.code === error.PERMISSION_DENIED) {
+          alert("Please enable location access in your browser settings.");
         }
-      );
-      return () => navigator.geolocation.clearWatch(watchId);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
+      }
+    );
+  } else {
+    console.error("Geolocation not supported.");
+  }
+
+  return () => {
+    if (watchId !== undefined) {
+      navigator.geolocation.clearWatch(watchId);
     }
-  }, []);
+  };
+}, []);
+
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
@@ -106,14 +123,36 @@ const EventsMap = () => {
           );
           return distance <= 0.1;
         })
-        .map((loc) => loc.name); // use loc.id if available
+        .map((loc) => loc.name);
   
-      setMissionProgress((prev) => ({
-        ...prev,
-        visited: Array.from(new Set([...prev.visited, ...newlyVisited])),
-      }));
+      setMissionProgress((prev) => {
+        const updatedVisited = Array.from(new Set([...prev.visited, ...newlyVisited]));
+        const justCompleted = updatedVisited.length === prev.total && prev.visited.length < prev.total;
+  
+        if (justCompleted) {
+          fetch('/api/claim-mission', {
+            method: 'POST',
+            credentials: 'include',  // <-- This line is the fix
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                console.log('🎉 Mission claimed!');
+              }
+            })
+            .catch((err) => console.error('Error claiming mission:', err));
+          
+        }
+        
+        return {
+          ...prev,
+          visited: updatedVisited,
+        };
+      });
     }
-  }, [userLocation, locations]);
+  }, [userLocation, locations, missionClaimed]);
+  
+  
   
 
   const createCustomIcon = () =>
@@ -134,7 +173,7 @@ const EventsMap = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
     const newCard = {
@@ -143,20 +182,43 @@ const EventsMap = () => {
       longitude: parseFloat(formData.longitude),
     };
   
-    setCustomCards((prev) => [...prev, newCard]);
+    try {
+      // Send the new card data to the /api/customcards route
+      const response = await fetch('/api/customcards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCard),
+      });
   
-    setFormData({
-      name: '',
-      type: '',
-      ability: '',
-      power: '',
-      description: '',
-      latitude: '',
-      longitude: '',
-      imageUrl: '',
-    });
+      const result = await response.json();
   
-    setShowForm(false);
+      if (result.success) {
+        console.log('🎉 New card created with ID:', result.cardId);
+  
+        // Optionally update the UI with the new card, if needed
+        setCustomCards((prev) => [...prev, newCard]);
+  
+        // Reset form data after submission
+        setFormData({
+          name: '',
+          type: '',
+          ability: '',
+          power: '',
+          description: '',
+          latitude: '',
+          longitude: '',
+          imageUrl: '',
+        });
+  
+        setShowForm(false);
+      } else {
+        console.error('Failed to create card:', result.error);
+      }
+    } catch (err) {
+      console.error('Error creating card:', err);
+    }
   };
   
   return (
@@ -297,73 +359,88 @@ const EventsMap = () => {
 
       {/* Map */}
       <div className="absolute inset-0 z-10">
-        <MapContainer center={defaultPosition} zoom={13} style={{ width: '100%', height: '100%' }}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="© OpenStreetMap contributors"
-          />
+      <MapContainer center={defaultPosition} zoom={13} style={{ width: '100%', height: '100%' }}>
+  <TileLayer
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    attribution="© OpenStreetMap contributors"
+  />
 
-          {locations.map((location, index) => (
-            <Marker
-            key={location.name} // or location.id if exists
-            position={[location.latitude, location.longitude]}
-            icon={createCustomIcon()}
-          />
-          ))}
-          {customCards.map((card, index) => (
-  <Marker
-    key={card.id || `${card.name}-${index}`} // fallback to unique combo
-    position={[card.latitude, card.longitude]} icon={cardIcon}
-  >
-  <Popup>
-    <div className="relative w-[250px] h-[380px] overflow-hidden rounded-lg shadow-lg text-white">
-      {/* Background image covering full card */}
-      <img
-        src={placeCard.src}
-        alt="Card Background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      />
+  {locations.map((location, index) => {
+    const isVisited = missionProgress.visited.includes(location.name); // or location.id if exists
 
-      {/* Content overlay */}
-      <div className="w-[250px] p-4 bg-white rounded-xl shadow-lg text-black space-y-3 text-sm">
-  {/* Image */}
-  <div className="w-full h-[120px] overflow-hidden rounded">
-    <img
-      src={card.imageUrl}
-      alt={card.name}
-      className="w-full h-full object-cover"
+    // Only render the marker if the location has not been visited
+    return (
+      !isVisited && (
+        <Marker
+          key={location.name} // or location.id if exists
+          position={[location.latitude, location.longitude]}
+          icon={createCustomIcon()}
+        />
+      )
+    );
+  })}
+
+  {customCards.map((card, index) => {
+    const isVisited = missionProgress.visited.includes(card.name); // or card.id if exists
+
+    // Only render the marker if the card location has not been visited
+    return (
+      !isVisited && (
+        <Marker
+          key={card.id || `${card.name}-${index}`} // fallback to unique combo
+          position={[card.latitude, card.longitude]}
+          icon={cardIcon}
+        >
+          <Popup>
+            <div className="relative w-[250px] h-[380px] overflow-hidden rounded-lg shadow-lg text-white">
+              {/* Background image covering full card */}
+              <img
+                src={placeCard.src}
+                alt="Card Background"
+                className="absolute inset-0 w-full h-full object-cover z-0"
+              />
+
+              {/* Content overlay */}
+              <div className="w-[250px] p-4 bg-white rounded-xl shadow-lg text-black space-y-3 text-sm">
+                {/* Image */}
+                <div className="w-full h-[120px] overflow-hidden rounded">
+                  <img
+                    src={card.imageUrl}
+                    alt={card.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Text Info */}
+                <div className="space-y-1">
+                  <h2 className="text-lg font-bold">{card.name}</h2>
+                  <p><span className="font-semibold">Type:</span> {card.type}</p>
+                  <p><span className="font-semibold">Ability:</span> {card.ability}</p>
+                  <p><span className="font-semibold">Power:</span> {card.power}</p>
+                </div>
+
+                {/* Description */}
+                <p className="italic text-xs text-gray-600">"{card.description}"</p>
+
+                {/* Optional footer or tag/icons can go here */}
+              </div>
+            </div>
+          </Popup>
+        </Marker>
+      )
+    );
+  })}
+
+  {userLocation && (
+    <Marker
+      position={[userLocation.lat, userLocation.lng]}
+      icon={userIcon}
+      interactive={false}
+      keyboard={false}
     />
-  </div>
+  )}
+</MapContainer>
 
-  {/* Text Info */}
-  <div className="space-y-1">
-    <h2 className="text-lg font-bold">{card.name}</h2>
-    <p><span className="font-semibold">Type:</span> {card.type}</p>
-    <p><span className="font-semibold">Ability:</span> {card.ability}</p>
-    <p><span className="font-semibold">Power:</span> {card.power}</p>
-  </div>
-
-  {/* Description */}
-  <p className="italic text-xs text-gray-600">"{card.description}"</p>
-
-  {/* Optional footer or tag/icons can go here */}
-</div>
-
-    </div>
-  </Popup>
-</Marker>
-))}
-
-
-          {userLocation && (
-            <Marker
-              position={[userLocation.lat, userLocation.lng]}
-              icon={userIcon}
-              interactive={false}
-              keyboard={false}
-            />
-          )}
-        </MapContainer>
       </div>
     </div>
   );
