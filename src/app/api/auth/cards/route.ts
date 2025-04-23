@@ -2,6 +2,8 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb'; 
 
+
+//Route to get ALL of cards in db
 export async function GET() {
   try {
     const db = await connectDB();
