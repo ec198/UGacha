@@ -173,7 +173,7 @@ const EventsMap = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
     const newCard = {
@@ -182,20 +182,43 @@ const EventsMap = () => {
       longitude: parseFloat(formData.longitude),
     };
   
-    setCustomCards((prev) => [...prev, newCard]);
+    try {
+      // Send the new card data to the /api/customcards route
+      const response = await fetch('/api/customcards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCard),
+      });
   
-    setFormData({
-      name: '',
-      type: '',
-      ability: '',
-      power: '',
-      description: '',
-      latitude: '',
-      longitude: '',
-      imageUrl: '',
-    });
+      const result = await response.json();
   
-    setShowForm(false);
+      if (result.success) {
+        console.log('🎉 New card created with ID:', result.cardId);
+  
+        // Optionally update the UI with the new card, if needed
+        setCustomCards((prev) => [...prev, newCard]);
+  
+        // Reset form data after submission
+        setFormData({
+          name: '',
+          type: '',
+          ability: '',
+          power: '',
+          description: '',
+          latitude: '',
+          longitude: '',
+          imageUrl: '',
+        });
+  
+        setShowForm(false);
+      } else {
+        console.error('Failed to create card:', result.error);
+      }
+    } catch (err) {
+      console.error('Error creating card:', err);
+    }
   };
   
   return (
