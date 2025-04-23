@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import placeCard from '@/assets/cardTemplates/place-card.png';
@@ -27,6 +25,19 @@ const CustomCardGallery = () => {
     imageUrl: '',
   });
 
+  useEffect(() => {
+    if (editingCard) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [editingCard]);
+  
+  
   useEffect(() => {
     const fetchCustomCards = async () => {
       try {
@@ -61,7 +72,7 @@ const CustomCardGallery = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`/api/customcards/${formData._id}`, {
+        const res = await fetch('/api/customcards', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +100,7 @@ const CustomCardGallery = () => {
   return (
     <div className="mt-12">
       <h2 className="text-4xl font-bold text-center text-white mb-6 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
-        Custom Cards
+        Custom Cards Made by All Users
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
@@ -125,8 +136,9 @@ const CustomCardGallery = () => {
       </div>
 
       {editingCard && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-[90%] sm:w-[400px] max-h-[90%] overflow-auto">
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 popup-background z-50">
+    <div className="bg-white p-6 rounded-xl shadow-lg w-[90%] sm:w-[400px] max-h-[90%] overflow-auto popup-form z-50">
+
             <h3 className="text-2xl font-bold text-center mb-4">Edit Card</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

@@ -1,8 +1,9 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
 const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
 
+// POST: Create a new card
 export async function POST(req: NextRequest) {
   const client = new MongoClient(uri);
 
@@ -10,7 +11,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, type, ability, power, description, latitude, longitude, imageUrl } = body;
 
-    // Ensure all required fields are present
     if (!name || !type || !ability || !power || !description || !latitude || !longitude || !imageUrl) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
     }
@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
     const db = client.db('UGachaCluster');
     const collection = db.collection('customcards');
 
-    // Insert the new custom card into the "customcards" collection
     const result = await collection.insertOne({
       name,
       type,
@@ -29,7 +28,7 @@ export async function POST(req: NextRequest) {
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
       imageUrl,
-      createdAt: new Date(), // Optionally track when the card was created
+      createdAt: new Date(),
     });
 
     return NextResponse.json({ success: true, cardId: result.insertedId });
@@ -40,18 +39,63 @@ export async function POST(req: NextRequest) {
     await client.close();
   }
 }
+
+// GET: Retrieve all cards
 export async function GET(req: NextRequest) {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const db = client.db('UGachaCluster');
+    const collection = db.collection('customcards');
+    const cards = await collection.find().toArray();
+    return NextResponse.json(cards);
+  } catch (err) {
+    return NextResponse.json({ error: 'Failed to fetch custom cards' }, { status: 500 });
+  } finally {
+    await client.close();
+  }
+}
+
+// PUT: Update an existing card
+export async function PUT(req: NextRequest) {
     const client = new MongoClient(uri);
+  
     try {
+      const body = await req.json();
+      const { _id, name, type, ability, power, description, imageUrl } = body;
+  
+      if (!_id || !name || !type || !ability || !power || !description || !imageUrl) {
+        return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
+      }
+  
       await client.connect();
       const db = client.db('UGachaCluster');
       const collection = db.collection('customcards');
-      const cards = await collection.find().toArray();
-      return NextResponse.json(cards);
+  
+      const result = await collection.updateOne(
+        { _id: new ObjectId(_id) },
+        {
+          $set: {
+            name,
+            type,
+            ability,
+            power,
+            description,
+            imageUrl,
+          },
+        }
+      );
+  
+      if (result.modifiedCount === 0) {
+        return NextResponse.json({ error: 'Card not found or no changes made.' }, { status: 404 });
+      }
+  
+      return NextResponse.json({ success: true });
     } catch (err) {
-      return NextResponse.json({ error: 'Failed to fetch custom cards' }, { status: 500 });
+      console.error('MongoDB update error:', err);
+      return NextResponse.json({ error: 'Failed to update custom card' }, { status: 500 });
     } finally {
       await client.close();
     }
   }
-  
