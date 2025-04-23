@@ -40,3 +40,18 @@ export async function POST(req: NextRequest) {
     await client.close();
   }
 }
+export async function GET(req: NextRequest) {
+    const client = new MongoClient(uri);
+    try {
+      await client.connect();
+      const db = client.db('UGachaCluster');
+      const collection = db.collection('customcards');
+      const cards = await collection.find().toArray();
+      return NextResponse.json(cards);
+    } catch (err) {
+      return NextResponse.json({ error: 'Failed to fetch custom cards' }, { status: 500 });
+    } finally {
+      await client.close();
+    }
+  }
+  
