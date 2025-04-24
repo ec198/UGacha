@@ -67,8 +67,8 @@ const CardInv = ({ cards }: { cards: Card[] }) => {
       </div>
 
       {selectedCard && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center pointer-events-none">
-          <div className="w-[90vw] max-w-md bg-white border border-gray-300 rounded-xl shadow-xl p-6 relative pointer-events-auto">
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm pointer-events-auto">
+          <div className="w-[90vw] max-w-md bg-white border border-gray-300 rounded-xl shadow-xl p-6 relative">
             <button
               onClick={() => setSelectedCard(null)}
               className="absolute top-2 right-2 bg-gray-200 text-black px-2 py-1 rounded hover:bg-gray-300 cursor-pointer"
@@ -97,6 +97,7 @@ const CardInv = ({ cards }: { cards: Card[] }) => {
           </div>
         </div>
       )}
+
     </>
   );
 };
