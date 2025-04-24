@@ -3,12 +3,17 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import ugacha from '@/assets/UGacha.png';
+import { usePathname } from 'next/navigation';
+
 
 const Navbar = () => {
   const [username, setUsername] = useState<string | null | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const router = useRouter();
+
+  const pathname = usePathname();
+
 
   const fetchUser = useCallback(async () => {
     try {
@@ -83,16 +88,16 @@ const Navbar = () => {
         <div className="relative flex items-center justify-between h-20">
           {/* Center nav - always takes up space, only renders links if logged in */}
           <div className="flex-1 hidden md:flex justify-center">
-            {username && (
-              <div className="flex space-x-4">
-                <a href="/" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Home</a>
-                <a href="/library" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Library</a>
-                <a href="/packs" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">Packs</a>
-                <a href="/about" className="text-white hover:bg-gray-900 rounded-md px-3 py-2">About</a>
-                <a href="/events" className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Events</a>
-              </div>
-            )}
-          </div>
+  {username && (
+    <div className="flex space-x-4">
+      <a href="/" className={`text-white px-3 py-2 rounded-md hover:bg-gray-900 ${pathname === '/' ? 'border-b-2 border-white' : ''}`}>Home</a>
+      <a href="/library" className={`text-white px-3 py-2 rounded-md hover:bg-gray-900 ${pathname === '/library' ? 'border-b-2 border-white' : ''}`}>Library</a>
+      <a href="/packs" className={`text-white px-3 py-2 rounded-md hover:bg-gray-900 ${pathname === '/packs' ? 'border-b-2 border-white' : ''}`}>Packs</a>
+      <a href="/about" className={`text-white px-3 py-2 rounded-md hover:bg-gray-900 ${pathname === '/about' ? 'border-b-2 border-white' : ''}`}>About</a>
+      <a href="/events" className={`text-white px-3 py-2 rounded-md hover:bg-gray-900 ${pathname === '/events' ? 'border-b-2 border-white' : ''}`}>Events</a>
+    </div>
+  )}
+</div>
 
           {/* Right nav - desktop only */}
           <div className="hidden md:flex items-center space-x-2">
