@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
+//Env Connection
+const uri = process.env.MONGODB_URI;
+const SECRET_KEY = process.env.JWT_SECRET;
+console.log("ENV TEST: ", {
+  MONGODB_URI: process.env.MONGODB_URI,
+  JWT_SECRET: process.env.JWT_SECRET
+});
 
 //Mongo Connection
 const client = new MongoClient(uri, {

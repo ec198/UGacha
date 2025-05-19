@@ -1,7 +1,8 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
-const uri = "mongodb+srv://akb38117:63h7CtnHzKNBhQE7@ugachacluster.wqcbq.mongodb.net/?retryWrites=true&w=majority&appName=UGachaCluster";
+//Env Connection
+const uri = process.env.MONGODB_URI!;
 
 //Deletes the custom card
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
